@@ -1,0 +1,147 @@
+let getInfluence = λ(x:∃<:influencedBy>.⊤) . x.<:influencedBy> in
+    getInfluence (head (query <:MusicArtist>))
+
+Let
+    Identifier
+        "getInfluence"
+    Lambda
+        Identifier
+            "x"
+        ConceptType
+            Exists
+                Atom
+                    ""
+                    "influencedBy"
+                Everything
+        Projection
+            Identifier
+                "x"
+            Atom
+                ""
+                "influencedBy"
+    Application
+        Identifier
+            "getInfluence"
+        Head
+            Query
+                Atom
+                    ""
+                    "MusicArtist"
+
+let getInfluences = λ(obj:∃<:influencedBy>.⊤).
+    let toName = λ(x:∃<:influencedBy>⁻.⊤).
+        case x of
+            type <:MusicArtist> as y → getName y
+            default "no influence known"
+        in letrec getNames:(∃<:influencedBy>⁻.⊤[] → string[]) =
+            λ(source:∃<:influencedBy>⁻.⊤[]) .
+                if (null source)
+                then nil[string]
+                else cons (toName (head source)), (getNames (tail source))
+    in
+        getNames obj.<:influencedBy>
+in
+    this-is-missing-in-the-paper
+
+Let
+    Identifier
+        "getInfluences"
+    Lambda
+        Identifier
+            "obj"
+        ConceptType
+            Exists
+                Atom
+                    ""
+                    "influencedBy"
+                Everything
+        Let
+            Identifier
+                "toName"
+            Lambda
+                Identifier
+                    "x"
+                ConceptType
+                    Exists
+                        Inverse
+                            Atom
+                                ""
+                                "influencedBy"
+                        Everything
+                Switch
+                    Identifier
+                        "x"
+                    Case
+                        Atom
+                            ""
+                            "MusicArtist"
+                        Identifier
+                            "y"
+                        Application
+                            Identifier
+                                "getName"
+                            Identifier
+                                "y"
+                    Primitive
+                        "no influence known"
+            Let
+                Identifier
+                    "getNames"
+                Fix
+                    Lambda
+                        Identifier
+                            "getNames"
+                        FuncType
+                            ListType
+                                ConceptType
+                                    Exists
+                                        Inverse
+                                            Atom
+                                                ""
+                                                "influencedBy"
+                                        Everything
+                            ListType
+                                PrimitiveType
+                                    "string"
+                        Lambda
+                            Identifier
+                                "source"
+                            ListType
+                                ConceptType
+                                    Exists
+                                        Inverse
+                                            Atom
+                                                ""
+                                                "influencedBy"
+                                        Everything
+                            If
+                                Null
+                                    Identifier
+                                        "source"
+                                Nil
+                                    PrimitiveType
+                                        "string"
+                                Cons
+                                    Application
+                                        Identifier
+                                            "toName"
+                                        Head
+                                            Identifier
+                                                "source"
+                                    Application
+                                        Identifier
+                                            "getNames"
+                                        Tail
+                                            Identifier
+                                                "source"
+                Application
+                    Identifier
+                        "getNames"
+                    Projection
+                        Identifier
+                            "obj"
+                        Atom
+                            ""
+                            "influencedBy"
+    Identifier
+        "this-is-missing-in-the-paper"

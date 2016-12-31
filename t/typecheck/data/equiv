@@ -1,0 +1,4 @@
+bool    | "a"   = "a"
+bool    | true  = false
+!Equiv  | "a"   = true
+!Equiv  | false = nil[bool]

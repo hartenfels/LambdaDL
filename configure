@@ -1,0 +1,288 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use File::Find;
+use POSIX qw(strftime);
+use Term::ANSIColor;
+
+$ENV{HERMIT_URL}
+    ||= 'http://www.hermit-reasoner.com/download/current/HermiT.zip';
+
+
+sub strip {
+    my ($text) = @_;
+    my ($lead) = ($text =~ /^(\s+)/);
+    $text =~ s/^$lead//gm if $lead;
+    return $text;
+}
+
+sub msg {
+    print "\n", strip(@_), "\n";
+}
+
+sub complain {
+    warn "\n", colored(strip(@_), 'yellow'), "\n";
+}
+
+sub choke {
+    die "\n", colored(strip(@_), 'red'), "\n";
+}
+
+
+my $errors = 0;
+
+sub error {
+    warn "\n", colored(strip(@_), 'red'), "\n";
+    ++$errors;
+}
+
+
+sub check_command {
+    my ($cmd, $msg) = @_;
+    if (system("command $cmd >/dev/null 2>&1") != 0) {
+        error($msg) if $msg;
+        return 0;
+    }
+    return 1;
+}
+
+
+sub _find {
+    my ($match, @search) = @_;
+    my $regex = ref($match) ? $match : qr/^\Q$match\E$/;
+    my (%files, %dirs);
+
+    find sub {
+        if (-f && $_ =~ $regex) {
+            $files{$File::Find::name} = 1;
+            $dirs{$File::Find::dir}   = 1;
+        }
+    }, @search;
+
+    return {
+        files => [sort keys %files],
+        dirs  => [sort keys %dirs],
+    };
+}
+
+sub find_files {
+    return @{_find(@_)->{files}};
+}
+
+sub find_dirs {
+    return @{_find(@_)->{dirs}};
+}
+
+
+my $p6      = $ENV{PERL6_BIN} || 'perl6';
+my $jc      = $ENV{JAVAC_BIN} || 'javac';
+my $cflags  = $ENV{CFLAGS}    || '-std=c89 -Wall -pedantic -fpic';
+my $ldflags = $ENV{LDFLAGS}   || '-shared -ljvm';
+
+my @search = split ' ', $ENV{JAVA_SEARCH} || '/opt /usr/lib';
+
+my @java_inc = $ENV{JAVA_INCLUDES}
+    ? split(' ', $ENV{JAVA_INCLUDES})
+    : find_dirs(qr/^jni(_md)?\.h$/, @search);
+
+my @java_lib = $ENV{JAVA_LIBS}
+    ? split(' ', $ENV{JAVA_LIBS})
+    : find_dirs(qr/^libjvm\.(so|dylib)$/, @search);
+
+
+if (@ARGV) {
+    msg(<<"    USAGE");
+        I don't take any arguments.
+        If you want to set something, use environment variables.
+
+        These are the variables I know and their current values:
+
+            JAVA_INCLUDES - directories for JNI headers
+                            [@java_inc]
+
+            JAVA_LIBS     - dynamic libraries for the JVM
+                            [@java_lib]
+
+            JAVA_SEARCH   - directories to search for Java
+                            includes and libraries
+                            [@search]
+
+            JAVAC_BIN     - command for the Java compiler
+                            [$jc]
+
+            PERL6_BIN     - command for Perl6
+                            [$p6]
+
+            CFLAGS        - C compiler flags
+                            [$cflags]
+
+            LDFLAGS       - linker flags
+                            [$ldflags]
+
+            HERMIT_URL    - HermiT reasoner URL
+                            [$ENV{HERMIT_URL}]
+
+        Normally, you can set environment variables like this:
+            VAR_A='some value' VAR_B='another value' ./configure
+    USAGE
+    exit 2;
+}
+
+
+check_command("$p6 -v", <<HERE);
+    Can't find Perl 6 interpreter `$p6`, so you probably need to
+    install it. See http://rakudo.org/ for details.
+HERE
+
+check_command("$jc -version", <<HERE);
+    Can't find Java compiler `$jc`, so you're probably missing Java.
+    Go install some kind of JDK, be it Oracle's or OpenJDK.
+HERE
+
+
+if (!@java_inc) {
+    error(<<"    ERROR");
+        Couldn't find Java include directory.
+        You'll need to find it yourself and put it
+        into the JAVA_INCLUDES environment variable.
+    ERROR
+}
+
+if (!@java_lib) {
+    error(<<"    ERROR");
+        Couldn't find a directory with libjvm in it.
+        You'll need to find where your libjvm.so or libjvm.dylib
+        is and put its directory into the JAVA_LIBS environment
+        variable.
+    ERROR
+}
+
+
+if (!-e 'vendor/HermiT.jar') {
+    msg('Trying to fetch HermiT for you...');
+
+    system <<'    SHELL';
+        set -e
+        mkdir -p vendor
+        cd vendor
+        curl -o HermiT.zip "$HERMIT_URL"
+        unzip HermiT.zip HermiT.jar
+        rm HermiT.zip
+    SHELL
+
+    if (!-e 'vendor/HermiT.jar') {
+        error(<<"        ERROR");
+            HermiT can't be set up automatically.
+            You'll have to download and unzip it by hand:
+
+             - Visit $ENV{HERMIT_URL}
+             - Unzip the HermiT.jar from it. It's in the root of the archive.
+             - Create a directory `vendor` if it doesn't exist yet.
+             - Put the HermiT.jar into the `vendor` directory.
+        ERROR
+    }
+}
+
+
+if ($errors) {
+    my $fmt = <<"    CHOKE";
+        Ran into $errors configuration error%s. Sorry.
+        Please resolve %s and then run configure again.
+    CHOKE
+    choke(sprintf $fmt, $errors == 1 ? ('', 'it') : ('s', 'them'));
+}
+
+
+my @inc_flags = map { "-I$_" } @java_inc;
+my @lib_flags = map { "-L$_" } @java_lib;
+
+my %template = (
+    PERL6    => $p6,
+    JAVAC    => $jc,
+    CFLAGS   => join(' ', @inc_flags, $cflags),
+    LDFLAGS  => join(' ', @lib_flags, $ldflags),
+    LIBPATH  => join(':', 'blib', @java_lib),
+    P6LIB    => join(' ', find_files(qr/\.pm6$/, 'lib')),
+    DATETIME => strftime('%Y-%m-%d %H:%M:%S', localtime),
+);
+
+
+open my $makefile, '>', 'Makefile' or error "Can't write to Makefile: $!\n";
+while (<DATA>) {
+    s/%(\w+)%/$template{$1}/ge;
+    s/^ +/\t/;
+    print {$makefile} $_;
+}
+close $makefile;
+
+
+print colored(<<DONE, 'green');
+
+Configuration complete!
+You should be able to run `make` now.
+
+DONE
+
+
+__DATA__
+# Generated by configure %DATETIME%
+
+CFLAGS  = %CFLAGS%
+LDFLAGS = %LDFLAGS%
+JFLAGS  = -d blib -classpath vendor/HermiT.jar
+
+BLIB  = blib/liblambdadl.so blib/KnowledgeBase.class
+P6LIB = %P6LIB%
+
+GRAMMAR_IN  = $(wildcard t/grammar/data/*)
+GRAMMAR_OUT = $(addsuffix .t,$(subst data/,,$(GRAMMAR_IN)))
+
+TYPECHECK_IN  = $(wildcard t/typecheck/data/*)
+TYPECHECK_OUT = $(addsuffix .t,$(subst data/,,$(TYPECHECK_IN)))
+
+
+all: $(BLIB) lambdadl .passed
+    @echo
+    @echo -ne "\033[32m"
+    @echo 'All good. Go run `./lambdadl` now.'
+    @echo -ne "\033[m"
+    @echo
+
+
+blib:
+    mkdir $@
+
+blib/liblambdadl.so: lib/lambdadl.c | blib
+    $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
+blib/KnowledgeBase.class: lib/KnowledgeBase.java vendor/HermiT.jar | blib
+    %JAVAC% $(JFLAGS) $<
+
+
+t/grammar/%.t: t/grammar/data/%
+    @perl -pe 's{FILE}{$<}' < t/grammar/template.p6 > $@
+
+t/typecheck/%.t: t/typecheck/data/%
+    @perl -pe 's{FILE}{$<}' < t/typecheck/template.p6 > $@
+
+test: $(GRAMMAR_OUT) $(TYPECHECK_OUT)
+    export LD_LIBRARY_PATH="%LIBPATH%:$$LD_LIBRARY_PATH" PERL6LIB=lib; %PERL6% -c lib/LambdaDL.pm6 && prove -j 9 -e %PERL6% -r t
+
+.passed: Makefile $(BLIB) $(P6LIB)
+    make -s test
+    touch $@
+
+
+lambdadl: share/bin-template.p6
+    perl -pe 's{__PERL6__}{%PERL6%}g; s{__LIBPATH__}{%LIBPATH%}g' <$< >$@
+    chmod +x $@
+
+
+clean:
+    rm -rf blib lib/.precomp .passed t/grammar/*.t t/typecheck/*.t
+
+realclean: clean
+    rm -rf Makefile lambdadl
+
+
+.PHONY: all test clean realclean

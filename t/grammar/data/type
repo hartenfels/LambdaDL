@@ -1,0 +1,41 @@
+nil[bool]
+
+Nil
+    PrimitiveType
+        "bool"
+
+nil[bool[]]
+
+Nil
+    ListType
+        PrimitiveType
+            "bool"
+
+nil[bool → bool]
+
+Nil
+    FuncType
+        PrimitiveType
+            "bool"
+        PrimitiveType
+            "bool"
+
+nil[(bool → bool)[]]
+
+Nil
+    ListType
+        FuncType
+            PrimitiveType
+                "bool"
+            PrimitiveType
+                "bool"
+
+nil[bool → bool[]]
+
+Nil
+    FuncType
+        PrimitiveType
+            "bool"
+        ListType
+            PrimitiveType
+                "bool"

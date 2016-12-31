@@ -1,0 +1,10 @@
+query <:RedWine>⊓<:WhiteWine>
+
+Query
+    Intersect
+        Atom
+            ""
+            "RedWine"
+        Atom
+            ""
+            "WhiteWine"

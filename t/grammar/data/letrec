@@ -1,0 +1,15 @@
+letrec a:bool = b in c
+
+Let
+    Identifier
+        "a"
+    Fix
+        Lambda
+            Identifier
+                "a"
+            PrimitiveType
+                "bool"
+            Identifier
+                "b"
+    Identifier
+        "c"

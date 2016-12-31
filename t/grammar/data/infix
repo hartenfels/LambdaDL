@@ -1,0 +1,55 @@
+a = b
+
+Equiv
+    Identifier
+        "a"
+    Identifier
+        "b"
+
+a.<:b>
+
+Projection
+    Identifier
+        "a"
+    Atom
+        ""
+        "b"
+
+a = b.<c:d>⁻
+
+Equiv
+    Identifier
+        "a"
+    Projection
+        Identifier
+            "b"
+        Inverse
+            Atom
+                "c"
+                "d"
+
+(a = b.<:c>) = d
+
+Equiv
+    Equiv
+        Identifier
+            "a"
+        Projection
+            Identifier
+                "b"
+            Atom
+                ""
+                "c"
+    Identifier
+        "d"
+
+a = b = c
+
+Equiv
+    Identifier
+        "a"
+    Equiv
+        Identifier
+            "b"
+        Identifier
+            "c"

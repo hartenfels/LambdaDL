@@ -1,0 +1,74 @@
+let getWines = λ(producer:<:Winery>) . producer.<:hasMaker>⁻ in
+let producedWines = (getWines <:ChateauChevalBlanc>) in
+    if (null producedWines)
+        then "no wine is known for this winery"
+        else
+            case head producedWines of
+                type <:RedWine>   as x → "red wines are recommended for meat"
+                type <:WhiteWine> as y → "white wines are recommended for fish"
+                type <:RoseWine>  as z → "i have no food recommendation for this"
+                default "You should stay away from wine whose color you cannot identify!"
+
+Let
+    Identifier
+        "getWines"
+    Lambda
+        Identifier
+            "producer"
+        ConceptType
+            Atom
+                ""
+                "Winery"
+        Projection
+            Identifier
+                "producer"
+            Inverse
+                Atom
+                    ""
+                    "hasMaker"
+    Let
+        Identifier
+            "producedWines"
+        Application
+            Identifier
+                "getWines"
+            Obj
+                Atom
+                    ""
+                    "ChateauChevalBlanc"
+        If
+            Null
+                Identifier
+                    "producedWines"
+            Primitive
+                "no wine is known for this winery"
+            Switch
+                Head
+                    Identifier
+                        "producedWines"
+                Case
+                    Atom
+                        ""
+                        "RedWine"
+                    Identifier
+                        "x"
+                    Primitive
+                        "red wines are recommended for meat"
+                Case
+                    Atom
+                        ""
+                        "WhiteWine"
+                    Identifier
+                        "y"
+                    Primitive
+                        "white wines are recommended for fish"
+                Case
+                    Atom
+                        ""
+                        "RoseWine"
+                    Identifier
+                        "z"
+                    Primitive
+                        "i have no food recommendation for this"
+                Primitive
+                    "You should stay away from wine whose color you cannot identify!"

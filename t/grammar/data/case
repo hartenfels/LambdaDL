@@ -1,0 +1,38 @@
+case a of default b
+
+Switch
+    Identifier
+        "a"
+    Identifier
+        "b"
+
+case a of
+    type <:T> as t → t t
+    type <U:V> as uv → head uv
+    default "whatever"
+
+Switch
+    Identifier
+        "a"
+    Case
+        Atom
+            ""
+            "T"
+        Identifier
+            "t"
+        Application
+            Identifier
+                "t"
+            Identifier
+                "t"
+    Case
+        Atom
+            "U"
+            "V"
+        Identifier
+            "uv"
+        Head
+            Identifier
+                "uv"
+    Primitive
+        "whatever"

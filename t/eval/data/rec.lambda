@@ -1,0 +1,7 @@
+letrec last:bool[] → bool = λ(list:bool[]).
+    if (tail list) = nil[bool] then
+        head list
+    else
+        last tail list
+in
+    last cons true, cons false, nil[bool]

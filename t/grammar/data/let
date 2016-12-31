@@ -1,0 +1,73 @@
+let a = b in c
+
+Let
+    Identifier
+        "a"
+    Identifier
+        "b"
+    Identifier
+        "c"
+
+let a = b in let c = d in e
+
+Let
+    Identifier
+        "a"
+    Identifier
+        "b"
+    Let
+        Identifier
+            "c"
+        Identifier
+            "d"
+        Identifier
+            "e"
+
+let a = let b = c in d in let e = f in g
+
+Let
+    Identifier
+        "a"
+    Let
+        Identifier
+            "b"
+        Identifier
+            "c"
+        Identifier
+            "d"
+    Let
+        Identifier
+            "e"
+        Identifier
+            "f"
+        Identifier
+            "g"
+
+let a =
+    let b =
+        let c =
+            d
+        in
+            e
+    in
+        f
+in
+    g
+
+Let
+    Identifier
+        "a"
+    Let
+        Identifier
+            "b"
+        Let
+            Identifier
+                "c"
+            Identifier
+                "d"
+            Identifier
+                "e"
+        Identifier
+            "f"
+    Identifier
+        "g"

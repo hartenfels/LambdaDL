@@ -1,0 +1,11 @@
+let f = λ(a:bool).λ(b:bool).
+    if a = b then
+        "same"
+    else
+        "different"
+in
+    cons f false false,
+    cons f false true,
+    cons f true  false,
+    cons f true  true,
+    nil[string]

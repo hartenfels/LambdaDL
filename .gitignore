@@ -1,0 +1,7 @@
+.passed
+blib
+lambdadl
+lib/.precomp
+Makefile
+t/grammar/*.t
+vendor

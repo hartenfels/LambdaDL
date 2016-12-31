@@ -1,0 +1,57 @@
+a
+
+Identifier
+    "a"
+
+foo
+
+Identifier
+    "foo"
+
+True
+
+Identifier
+    "True"
+
+falsE
+
+Identifier
+    "falsE"
+
+snake_case
+
+Identifier
+    "snake_case"
+
+kebap-case-is-allowed-too
+
+Identifier
+    "kebap-case-is-allowed-too"
+
+kebap-and_snakeAndCamel
+
+Identifier
+    "kebap-and_snakeAndCamel"
+
+_
+
+Identifier
+    "_"
+
+_-_
+
+Identifier
+    "_-_"
+
+don't
+
+Identifier
+    "don't"
+
+_-
+
+!
+
+-
+
+!

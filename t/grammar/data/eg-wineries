@@ -1,0 +1,165 @@
+letrec containsWinery:<:Winery> → <:Winery>[] → bool =
+    λ(value:<:Winery>) . λ(source:<:Winery>[]) .
+        if null source
+        then
+            false
+        else
+            if value = head source
+            then true
+            else containsWinery value (tail source)
+    in
+        letrec toMaker:<:Wine>[] → <:Winery>[] =
+            λ(source:<:Wine>[]) .
+                if (null source)
+                then
+                    nil[<:Winery>]
+                else
+                    let mapped = toMaker (tail source) in
+                    let winery = head ((head source).<:hasMaker>) in
+                        if containsWinery winery mapped
+                        then mapped
+                        else cons winery, mapped
+        in
+            toMaker (query <:RedWine>⊓<:DryWine>)
+
+Let
+    Identifier
+        "containsWinery"
+    Fix
+        Lambda
+            Identifier
+                "containsWinery"
+            FuncType
+                ConceptType
+                    Atom
+                        ""
+                        "Winery"
+                FuncType
+                    ListType
+                        ConceptType
+                            Atom
+                                ""
+                                "Winery"
+                    PrimitiveType
+                        "bool"
+            Lambda
+                Identifier
+                    "value"
+                ConceptType
+                    Atom
+                        ""
+                        "Winery"
+                Lambda
+                    Identifier
+                        "source"
+                    ListType
+                        ConceptType
+                            Atom
+                                ""
+                                "Winery"
+                    If
+                        Null
+                            Identifier
+                                "source"
+                        Primitive
+                            ?False
+                        If
+                            Equiv
+                                Identifier
+                                    "value"
+                                Head
+                                    Identifier
+                                        "source"
+                            Primitive
+                                ?True
+                            Application
+                                Application
+                                    Identifier
+                                        "containsWinery"
+                                    Identifier
+                                        "value"
+                                Tail
+                                    Identifier
+                                        "source"
+    Let
+        Identifier
+            "toMaker"
+        Fix
+            Lambda
+                Identifier
+                    "toMaker"
+                FuncType
+                    ListType
+                        ConceptType
+                            Atom
+                                ""
+                                "Wine"
+                    ListType
+                        ConceptType
+                            Atom
+                                ""
+                                "Winery"
+                Lambda
+                    Identifier
+                        "source"
+                    ListType
+                        ConceptType
+                            Atom
+                                ""
+                                "Wine"
+                    If
+                        Null
+                            Identifier
+                                "source"
+                        Nil
+                            ConceptType
+                                Atom
+                                    ""
+                                    "Winery"
+                        Let
+                            Identifier
+                                "mapped"
+                            Application
+                                Identifier
+                                    "toMaker"
+                                Tail
+                                    Identifier
+                                        "source"
+                            Let
+                                Identifier
+                                    "winery"
+                                Head
+                                    Projection
+                                        Head
+                                            Identifier
+                                                "source"
+                                        Atom
+                                            ""
+                                            "hasMaker"
+                                If
+                                    Application
+                                        Application
+                                            Identifier
+                                                "containsWinery"
+                                            Identifier
+                                                "winery"
+                                        Identifier
+                                            "mapped"
+                                    Identifier
+                                        "mapped"
+                                    Cons
+                                        Identifier
+                                            "winery"
+                                        Identifier
+                                            "mapped"
+        Application
+            Identifier
+                "toMaker"
+            Query
+                Intersect
+                    Atom
+                        ""
+                        "RedWine"
+                    Atom
+                        ""
+                        "DryWine"
