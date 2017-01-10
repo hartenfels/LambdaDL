@@ -54,6 +54,12 @@ class Type::Func is Type {
     method check-func($, $) { self }
 }
 
+class Type::Concept is Type {
+    has $of is required;
+
+    method id() { $.of }
+}
+
 
 constant \unknown-type = Type::Unknown.new;
 constant \bool-type    = Type::Primitive.new(:id( 'bool' ));
@@ -63,11 +69,19 @@ sub func-type($arg, $ret) { Type::Func.new(:$arg, :$ret) }
 
 sub list-type($of) { Type::List.new(:$of) }
 
+sub concept-type($of) { Type::Concept.new(:$of) }
+
 
 class Scope {
+    has $.ast;
     has $.sym;
 
-    method new($sym = Map.new) { self.bless(:$sym) }
+    method new($ast, $sym = Map.new) { self.bless(:$ast, :$sym) }
+
+    method subscope($name, $type) {
+        return Scope.new($.ast, Map.new: $.sym.flat, $name => $type);
+    }
+
 
     multi method t([PrimitiveType, 'bool'  ]) {   bool-type }
     multi method t([PrimitiveType, 'string']) { string-type }
@@ -117,13 +131,13 @@ class Scope {
 
     multi method t([Let, [Identifier, $name], $value, $in]) {
         my $type  = self.t($value);
-        my $inner = Scope.new(Map.new: $.sym.flat, $name => $type);
+        my $inner = self.subscope($name, $type);
         return $inner.t($in);
     }
 
     multi method t([Lambda, [Identifier, $name], $arg, $term]) {
         my $arg-type = self.t($arg);
-        my $inner    = Scope.new(Map.new: $.sym.flat, $name => $arg-type);
+        my $inner    = self.subscope($name, $arg-type);
         return func-type $arg-type, $inner.t($term);
     }
 
@@ -135,7 +149,18 @@ class Scope {
     multi method t([Fix $ctx, $term]) {
         return self.t($term).check-func($ctx, 'Fix').ret;
     }
+
+    multi method t([Everything]) {
+        return concept-type(self.ast.kb.everything);
+    }
+
+    multi method t([Query, $concept]) {
+        return self.t($concept);
+    }
+
+
+    method check() { self.t($.ast.term) }
 }
 
 
-sub check-type($ast) is export { Scope.new.t($ast) }
+sub check-type($ast) is export { Scope.new($ast).check }

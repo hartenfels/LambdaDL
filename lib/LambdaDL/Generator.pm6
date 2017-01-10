@@ -1,4 +1,4 @@
-unit module LambdaDL::Generator;
+unit class LambdaDL::Generator;
 use LambdaDL::AST;
 
 
@@ -19,50 +19,55 @@ constant \preamble := q:to/END_OF_PREAMBLE/;
     END_OF_PREAMBLE
 
 
-multi sub gen([Primitive, Bool $b]) { $b ?? 'True' !! 'False' }
-multi sub gen([Primitive, Str  $s]) { qq/"$s"/  }
+has $.ast;
 
-multi sub gen([Identifier, $name]) { "$name" }
 
-multi sub gen([Nil, $]) { '[]' }
+multi method gen($_: [Primitive, Bool $b]) { $b ?? 'True' !! 'False' }
+multi method gen($_: [Primitive, Str  $s]) { qq/"$s"/  }
 
-multi sub gen([Cons, $head, $tail]) {
-    "[{gen $head}, |{gen $tail}]"
+multi method gen($_: [Identifier, $name]) { "$name" }
+
+multi method gen($_: [Nil, $]) { '[]' }
+
+multi method gen($_: [Cons, $head, $tail]) {
+    "[{.gen: $head}, |{.gen: $tail}]"
 }
 
-multi sub gen([Head, $list]) {
-    "\$head.({gen $list})"
+multi method gen($_: [Head, $list]) {
+    "\$head.({.gen: $list})"
 }
 
-multi sub gen([Tail, $list]) {
-    "\$tail.({gen $list})"
+multi method gen($_: [Tail, $list]) {
+    "\$tail.({.gen: $list})"
 }
 
-multi sub gen([Application, $func, $arg]) {
-    "({gen $func}).({gen $arg})"
+multi method gen($_: [Application, $func, $arg]) {
+    "({.gen: $func}).({.gen: $arg})"
 }
 
-multi sub gen([Equiv, $lhs, $rhs]) {
-    "({gen $lhs} eqv {gen $rhs})"
+multi method gen($_: [Equiv, $lhs, $rhs]) {
+    "({.gen: $lhs} eqv {.gen: $rhs})"
 }
 
-multi sub gen([Let, $ident, $value, $in]) {
-    "do \{ my \\{gen $ident} := do \{ {gen $value} }; {gen $in} \}"
+multi method gen($_: [Let, $ident, $value, $in]) {
+    "do \{ my \\{.gen: $ident} := do \{ {.gen: $value} }; {.gen: $in} \}"
 }
 
-multi sub gen([Lambda, $ident, $, $term]) {
-    "-> \\{gen $ident} \{ {gen $term} }"
+multi method gen($_: [Lambda, $ident, $, $term]) {
+    "-> \\{.gen: $ident} \{ {.gen: $term} }"
 }
 
-multi sub gen([If, $cond, $then, $else]) {
-    "({gen $cond} ?? {gen $then} !! {gen $else})"
+multi method gen($_: [If, $cond, $then, $else]) {
+    "({.gen: $cond} ?? {.gen: $then} !! {.gen: $else})"
 }
 
-multi sub gen([Fix, $term]) {
-    "\$fix.({gen $term})"
+multi method gen($_: [Fix, $term]) {
+    "\$fix.({.gen: $term})"
 }
 
+
+method generate() { "{preamble}\n{self.gen($.ast.term)}\n" }
 
 sub generate($ast) is export {
-    return "{preamble}\n{gen($ast)}\n";
+    return LambdaDL::Generator.new(:$ast).generate;
 }

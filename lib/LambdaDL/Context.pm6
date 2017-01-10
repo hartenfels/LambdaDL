@@ -33,6 +33,11 @@ class X::LambdaDL::Syntax is X::LambdaDL::Parse is export {
 }
 
 
+class X::LambdaDL::NoDataSource is X::LambdaDL is export {
+    method message() { "Can't query knowledge base without a data source" }
+}
+
+
 class X::LambdaDL::UnknownIdentifier is X::LambdaDL is export {
     method message() { "Unknown identifier '$.msg'" }
 }

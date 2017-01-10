@@ -13,7 +13,14 @@ sub left-right($/) {
 }
 
 
-method TOP($/) { make $<term>.made }
+method TOP($/) {
+    make LambdaDL::AST.new(:term($<term>.made), :path($<kb>.?made));
+}
+
+
+method kb($/) { make $<path>.made }
+
+method path($/) { make $/.Str.trim }
 
 
 method term($/) {
@@ -129,6 +136,7 @@ method ident($/) { make ast $/, Identifier, $/.Str }
 
 method Concept($/) { make $<inner>.made }
 method Ident  ($/) { make $<inner>.made }
+method Path   ($/) { make $<inner>.made }
 method Role   ($/) { make $<inner>.made }
 method Term   ($/) { make $<inner>.made }
 method Type   ($/) { make $<inner>.made }

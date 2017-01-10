@@ -7,7 +7,12 @@ constant @reserved-words = <
 >;
 
 
-token TOP { <ws> <term=.Term> <ws> <garbage> }
+token TOP { <ws> <kb>? <ws> <term=.Term> <ws> <garbage> }
+
+
+rule kb { '@' <path=.Path> }
+
+token path { \V+ <?{ $/ ~~ /\S/ }> }
 
 
 # Application needs to be left-associative, but the grammar can't have
@@ -156,6 +161,7 @@ token blank:sym<plain> { \s+ }
 
 token Concept { <inner=.concept> || <needed('a concept'    )> }
 token Ident   { <inner=.ident>   || <needed('an identifier')> }
+token Path    { <inner=.path>    || <needed('a path'       )> }
 token Role    { <inner=.role>    || <needed('a role'       )> }
 token Term    { <inner=.term>    || <needed('a term'       )> }
 token Type    { <inner=.type>    || <needed('a type'       )> }

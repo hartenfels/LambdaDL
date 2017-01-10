@@ -21,7 +21,7 @@ for .comb(/\S .*? <?before \n ** 2..* || \n? $>/) -> $code, $expect {
         nok $match, "no parse for:\n$c";
     }
     else {
-        my $made = $match ?? pretty($match.made) !! '';
+        my $made = $match ?? pretty($match.made.term) !! '';
         is $made, $expect, "parse for:\n$c\ngives:\n$e";
     }
 }

@@ -1,5 +1,6 @@
-unit module LambdaDL::AST;
+unit class LambdaDL::AST;
 use LambdaDL::Context;
+use LambdaDL::KnowledgeBase;
 
 
 enum NodeType is export <
@@ -30,4 +31,19 @@ sub ast($/, NodeType:D $type, **@args) is export {
         $type but Context.new($/),
         |@args.map: { $_ ~~ Match ?? .made !! $_ },
     ];
+}
+
+
+has $.term;
+has $.path;
+has $!kb;
+
+method build-kb() {
+    die X::LambdaDL::NoDataSource.new without $.path;
+    return LambdaDL::KnowledgeBase.new($.path);
+}
+
+method kb() {
+    $!kb = self.build-kb unless $!kb;
+    return $!kb;
 }
