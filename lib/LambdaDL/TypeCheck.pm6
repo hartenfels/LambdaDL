@@ -82,6 +82,8 @@ class Scope {
         return Scope.new($.ast, Map.new: $.sym.flat, $name => $type);
     }
 
+    method kb() { self.ast.kb }
+
 
     multi method t([PrimitiveType, 'bool'  ]) {   bool-type }
     multi method t([PrimitiveType, 'string']) { string-type }
@@ -151,11 +153,11 @@ class Scope {
     }
 
     multi method t([Everything]) {
-        return concept-type(self.ast.kb.everything);
+        return concept-type($.kb.everything);
     }
 
     multi method t([Nothing]) {
-        return concept-type(self.ast.kb.nothing);
+        return concept-type($.kb.nothing);
     }
 
     multi method t([Query, $concept]) {
