@@ -1,4 +1,5 @@
 #!/usr/bin/env perl6
+use lib $?FILE.IO.parent.absolute;
 use LambdaDL::Context;
 use LambdaDL::Generator;
 use LambdaDL::Parser;
@@ -26,7 +27,7 @@ sub eject($!, $file, $symbol = '⏏') {
 }
 
 
-our sub run(Str:D $file, IO::Handle:D $input, IO::Handle $output?) is export {
+sub lambdadl(Str:D $file, IO::Handle:D $input, IO::Handle $output?) is export {
     my $text = $input.slurp-rest;
     my $ast  = try LambdaDL::Parser.parse($text);
 
@@ -53,4 +54,24 @@ our sub run(Str:D $file, IO::Handle:D $input, IO::Handle $output?) is export {
         use MONKEY-SEE-NO-EVAL;
         say EVAL($code);
     }
+}
+
+
+sub source(Str:D $path, IO::Handle:D $default, *%flags) {
+    use fatal;
+    return $default if $path eq '-';
+    return $path.IO.open(|%flags);
+    CATCH {
+        $*ERR.print(.message, "\n");
+        exit 1;
+    }
+}
+
+sub MAIN(Str $file, Str :output(:o($o))) {
+    my IO::Handle $input  = source($file, $*IN, :r);
+    my IO::Handle $output = source($o, $*OUT, :w) if defined $o;
+
+    lambdadl($file, $input, $output);
+
+    $output.close if $output;
 }
