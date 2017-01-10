@@ -201,7 +201,7 @@ my %template = (
     JAVAC    => $jc,
     CFLAGS   => join(' ', @inc_flags, $cflags),
     LDFLAGS  => join(' ', @lib_flags, $ldflags),
-    LIBPATH  => join(':', 'blib', @java_lib),
+    LIBPATH  => join(':', @java_lib),
     P6LIB    => join(' ', find_files(qr/\.pm6$/, 'lib')),
     DATETIME => strftime('%Y-%m-%d %H:%M:%S', localtime),
 );
@@ -266,7 +266,7 @@ t/typecheck/%.t: t/typecheck/data/%
     @perl -pe 's{FILE}{$<}' < t/typecheck/template.p6 > $@
 
 test: $(GRAMMAR_OUT) $(TYPECHECK_OUT)
-    export LD_LIBRARY_PATH="%LIBPATH%:$$LD_LIBRARY_PATH" PERL6LIB=lib; %PERL6% -c lib/LambdaDL.pm6 && prove -j 9 -e %PERL6% -r t
+    export LD_LIBRARY_PATH="blib:%LIBPATH%:$$LD_LIBRARY_PATH" PERL6LIB=lib; %PERL6% -c lib/LambdaDL.pm6 && prove -j 9 -e %PERL6% -r t
 
 .passed: Makefile $(BLIB) $(P6LIB)
     make -s test
