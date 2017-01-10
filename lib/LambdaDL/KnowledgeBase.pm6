@@ -2,6 +2,10 @@ unit class LambdaDL::KnowledgeBase;
 use NativeCall;
 
 
+constant $STRING   = 'Ljava/lang/String;';
+constant $OWL-EXPR = 'Lorg/semanticweb/owlapi/model/OWLClassExpression;';
+
+
 sub jcall(&func, *@args) { ... }
 
 
@@ -42,7 +46,7 @@ class X::Java is Exception is export {
 
     method message(--> Str) {
         temp $in-exception = True;
-        return ~jcall(&ldl_call_vo, $!ex, 'getMessage', '()Ljava/lang/String;');
+        return ~jcall(&ldl_call_vo, $!ex, 'getMessage', "()$STRING");
     }
 
     method print-stack-trace(--> X::Java:D) {
@@ -87,6 +91,13 @@ method new(Str:D $path --> LambdaDL::KnowledgeBase) {
 }
 
 method dump-hierarchies(--> Str:D) {
-    return ~jcall(&ldl_call_vo, $!obj, 'dumpHierarchies',
-                  '()Ljava/lang/String;');
+    return ~jcall(&ldl_call_vo, $!obj, 'dumpHierarchies', "()$STRING");
+}
+
+method everything(--> JObject:D) {
+    return jcall(&ldl_call_vo, $!obj, 'everything', "()$OWL-EXPR");
+}
+
+method nothing(--> JObject:D) {
+    return jcall(&ldl_call_vo, $!obj, 'nothing', "()$OWL-EXPR");
 }

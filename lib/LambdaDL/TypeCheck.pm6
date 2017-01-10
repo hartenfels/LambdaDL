@@ -55,7 +55,7 @@ class Type::Func is Type {
 }
 
 class Type::Concept is Type {
-    has $of is required;
+    has $.of is required;
 
     method id() { $.of }
 }
@@ -152,6 +152,10 @@ class Scope {
 
     multi method t([Everything]) {
         return concept-type(self.ast.kb.everything);
+    }
+
+    multi method t([Nothing]) {
+        return concept-type(self.ast.kb.nothing);
     }
 
     multi method t([Query, $concept]) {
