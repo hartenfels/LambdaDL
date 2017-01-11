@@ -15,7 +15,7 @@ class JObject is repr('CPointer') {
         jcall(&ldl_str, self, sub (uint32 $len --> blob16) {
             return $buf = blob16.new(0 xx $len);
         });
-        return $buf.decode('utf-16');
+        return $buf.decode('UTF-16');
     }
 }
 
