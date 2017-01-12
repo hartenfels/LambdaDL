@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <jni.h>
 
@@ -23,6 +24,8 @@
         fprintf(stderr, "Can't get object class for '%p'\n", (void *)obj); \
         return retval; \
     }
+
+#define J_ARGS const char *name, const char *signature
 
 
 static JavaVM *jvm = NULL;
@@ -82,11 +85,28 @@ jobject ldl_new_KnowledgeBase(const jchar *path, unsigned int len)
         return NULL;
     }
 
-    return (*env)->NewGlobalRef(env, obj);
+    return obj;
 }
 
 
-void ldl_str(jstring str, jchar *(*gimme_buf)(unsigned int))
+jobject ldl_root(jobject obj)
+{
+    return (*env)->NewGlobalRef(env, obj);
+}
+
+void ldl_unroot(jobject obj)
+{
+    (*env)->DeleteGlobalRef(env, obj);
+}
+
+
+jstring ldl_s2j(const jchar *str, unsigned int len)
+{
+    return (*env)->NewString(env, str, len);
+}
+
+
+void ldl_j2s(jstring str, jchar *(*gimme_buf)(unsigned int))
 {
     jsize        len;
     const jchar *chars;
@@ -100,7 +120,35 @@ void ldl_str(jstring str, jchar *(*gimme_buf)(unsigned int))
 }
 
 
-void ldl_call_v(jobject obj, const char *name)
+static jobject call_o(jobject obj, const char *name, const char *signature, ...)
+{
+    va_list   args;
+    jclass    cls;
+    jmethodID mid;
+    jobject   ret;
+
+    J_GET_OBJECT_CLASS(cls, obj, NULL);
+    J_FIND_METHOD(mid, cls, name, signature, NULL);
+
+    va_start(args, signature);
+    ret = (*env)->CallObjectMethodV(env, obj, mid, args);
+    va_end(args);
+
+    return ret;
+}
+
+jobject ldl_o(jobject obj, J_ARGS)
+{
+    return call_o(obj, name, signature);
+}
+
+jobject ldl_o_o(jobject obj, jobject arg1, J_ARGS)
+{
+    return call_o(obj, name, signature, arg1);
+}
+
+
+void ldl_v(jobject obj, const char *name)
 {
     jclass    cls;
     jmethodID mid;
@@ -109,17 +157,6 @@ void ldl_call_v(jobject obj, const char *name)
     J_FIND_METHOD(mid, cls, name, "()V", NOTHING);
 
     (*env)->CallVoidMethod(env, obj, mid);
-}
-
-jobject ldl_call_vo(jobject obj, const char *name, const char *signature)
-{
-    jclass    cls;
-    jmethodID mid;
-
-    J_GET_OBJECT_CLASS(cls, obj, NULL);
-    J_FIND_METHOD(mid, cls, name, signature, NULL);
-
-    return (*env)->CallObjectMethod(env, obj, mid);
 }
 
 
@@ -137,5 +174,5 @@ jobject ldl_get_class_name(jobject obj)
         return NULL;
     }
 
-    return ldl_call_vo(co, "getName", "()Ljava/lang/String;");
+    return ldl_o(co, "getName", "()Ljava/lang/String;");
 }

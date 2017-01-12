@@ -152,13 +152,16 @@ class Scope {
         return self.t($term).check-func($ctx, 'Fix').ret;
     }
 
-    multi method t([Everything]) {
-        return concept-type($.kb.everything);
+    multi method t([Atom, $iri]) {
+        return concept-type($.kb.atom($iri));
     }
 
-    multi method t([Nothing]) {
-        return concept-type($.kb.nothing);
+    multi method t([Inverse, $atom]) {
+        return concept-type(self.t($atom).of.invert);
     }
+
+    multi method t([Everything]) { concept-type($.kb.everything) }
+    multi method t([Nothing   ]) { concept-type($.kb.nothing   ) }
 
     multi method t([Query, $concept]) {
         return self.t($concept);
