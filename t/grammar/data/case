@@ -16,8 +16,7 @@ Switch
         "a"
     Case
         Atom
-            ""
-            "T"
+            ":T"
         Identifier
             "t"
         Application
@@ -27,8 +26,7 @@ Switch
                 "t"
     Case
         Atom
-            "U"
-            "V"
+            "U:V"
         Identifier
             "uv"
         Head

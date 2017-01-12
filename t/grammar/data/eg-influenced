@@ -10,23 +10,20 @@ Let
         ConceptType
             Exists
                 Atom
-                    ""
-                    "influencedBy"
+                    ":influencedBy"
                 Everything
         Projection
             Identifier
                 "x"
             Atom
-                ""
-                "influencedBy"
+                ":influencedBy"
     Application
         Identifier
             "getInfluence"
         Head
             Query
                 Atom
-                    ""
-                    "MusicArtist"
+                    ":MusicArtist"
 
 let getInfluences = λ(obj:∃<:influencedBy>.⊤).
     let toName = λ(x:∃<:influencedBy>⁻.⊤).
@@ -52,8 +49,7 @@ Let
         ConceptType
             Exists
                 Atom
-                    ""
-                    "influencedBy"
+                    ":influencedBy"
                 Everything
         Let
             Identifier
@@ -65,16 +61,14 @@ Let
                     Exists
                         Inverse
                             Atom
-                                ""
-                                "influencedBy"
+                                ":influencedBy"
                         Everything
                 Switch
                     Identifier
                         "x"
                     Case
                         Atom
-                            ""
-                            "MusicArtist"
+                            ":MusicArtist"
                         Identifier
                             "y"
                         Application
@@ -97,8 +91,7 @@ Let
                                     Exists
                                         Inverse
                                             Atom
-                                                ""
-                                                "influencedBy"
+                                                ":influencedBy"
                                         Everything
                             ListType
                                 PrimitiveType
@@ -111,8 +104,7 @@ Let
                                     Exists
                                         Inverse
                                             Atom
-                                                ""
-                                                "influencedBy"
+                                                ":influencedBy"
                                         Everything
                             If
                                 Null
@@ -141,7 +133,6 @@ Let
                         Identifier
                             "obj"
                         Atom
-                            ""
-                            "influencedBy"
+                            ":influencedBy"
     Identifier
         "this-is-missing-in-the-paper"

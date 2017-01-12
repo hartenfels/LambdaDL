@@ -12,8 +12,7 @@ Projection
     Identifier
         "a"
     Atom
-        ""
-        "b"
+        ":b"
 
 a = b.<c:d>⁻
 
@@ -25,8 +24,7 @@ Equiv
             "b"
         Inverse
             Atom
-                "c"
-                "d"
+                "c:d"
 
 (a = b.<:c>) = d
 
@@ -38,8 +36,7 @@ Equiv
             Identifier
                 "b"
             Atom
-                ""
-                "c"
+                ":c"
     Identifier
         "d"
 

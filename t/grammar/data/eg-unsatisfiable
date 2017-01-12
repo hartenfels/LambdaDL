@@ -3,8 +3,6 @@ query <:RedWine>⊓<:WhiteWine>
 Query
     Intersect
         Atom
-            ""
-            "RedWine"
+            ":RedWine"
         Atom
-            ""
-            "WhiteWine"
+            ":WhiteWine"

@@ -17,15 +17,13 @@ Let
             "producer"
         ConceptType
             Atom
-                ""
-                "Winery"
+                ":Winery"
         Projection
             Identifier
                 "producer"
             Inverse
                 Atom
-                    ""
-                    "hasMaker"
+                    ":hasMaker"
     Let
         Identifier
             "producedWines"
@@ -34,8 +32,7 @@ Let
                 "getWines"
             Obj
                 Atom
-                    ""
-                    "ChateauChevalBlanc"
+                    ":ChateauChevalBlanc"
         If
             Null
                 Identifier
@@ -48,24 +45,21 @@ Let
                         "producedWines"
                 Case
                     Atom
-                        ""
-                        "RedWine"
+                        ":RedWine"
                     Identifier
                         "x"
                     Primitive
                         "red wines are recommended for meat"
                 Case
                     Atom
-                        ""
-                        "WhiteWine"
+                        ":WhiteWine"
                     Identifier
                         "y"
                     Primitive
                         "white wines are recommended for fish"
                 Case
                     Atom
-                        ""
-                        "RoseWine"
+                        ":RoseWine"
                     Identifier
                         "z"
                     Primitive

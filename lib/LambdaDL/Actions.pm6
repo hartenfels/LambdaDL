@@ -129,7 +129,7 @@ method concept-rhs:sym<union>($/) { make [Union,     $<concept>] }
 method concept-rhs:sym<isect>($/) { make [Intersect, $<concept>] }
 
 
-method atom($/) { make ast $/, Atom, |$<prefix suffix>».Str }
+method atom($/) { make ast $/, Atom, "$<prefix>:$<suffix>" }
 
 method ident($/) { make ast $/, Identifier, $/.Str }
 

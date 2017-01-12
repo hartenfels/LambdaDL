@@ -32,14 +32,12 @@ Let
             FuncType
                 ConceptType
                     Atom
-                        ""
-                        "Winery"
+                        ":Winery"
                 FuncType
                     ListType
                         ConceptType
                             Atom
-                                ""
-                                "Winery"
+                                ":Winery"
                     PrimitiveType
                         "bool"
             Lambda
@@ -47,16 +45,14 @@ Let
                     "value"
                 ConceptType
                     Atom
-                        ""
-                        "Winery"
+                        ":Winery"
                 Lambda
                     Identifier
                         "source"
                     ListType
                         ConceptType
                             Atom
-                                ""
-                                "Winery"
+                                ":Winery"
                     If
                         Null
                             Identifier
@@ -92,21 +88,18 @@ Let
                     ListType
                         ConceptType
                             Atom
-                                ""
-                                "Wine"
+                                ":Wine"
                     ListType
                         ConceptType
                             Atom
-                                ""
-                                "Winery"
+                                ":Winery"
                 Lambda
                     Identifier
                         "source"
                     ListType
                         ConceptType
                             Atom
-                                ""
-                                "Wine"
+                                ":Wine"
                     If
                         Null
                             Identifier
@@ -114,8 +107,7 @@ Let
                         Nil
                             ConceptType
                                 Atom
-                                    ""
-                                    "Winery"
+                                    ":Winery"
                         Let
                             Identifier
                                 "mapped"
@@ -134,8 +126,7 @@ Let
                                             Identifier
                                                 "source"
                                         Atom
-                                            ""
-                                            "hasMaker"
+                                            ":hasMaker"
                                 If
                                     Application
                                         Application
@@ -158,8 +149,6 @@ Let
             Query
                 Intersect
                     Atom
-                        ""
-                        "RedWine"
+                        ":RedWine"
                     Atom
-                        ""
-                        "DryWine"
+                        ":DryWine"
