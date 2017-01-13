@@ -24,17 +24,6 @@ class KnowledgeBase {
     }
 
 
-    public String dumpHierarchies() {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        PrintWriter           writer = new PrintWriter(stream);
-
-        hermit.printHierarchies(writer, true, true, true);
-        writer.close();
-
-        return stream.toString();
-    }
-
-
     private IRI toIRI(String s) {
         String expanded;
         try {

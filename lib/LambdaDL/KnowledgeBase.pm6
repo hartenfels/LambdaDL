@@ -126,11 +126,6 @@ submethod DESTROY { ldl_unroot($!kb) }
 method new(Str() $path) { self.bless(:$path) }
 
 
-method dump-hierarchies(--> Str:D) {
-    return ~jcall(&ldl_o, $!kb, 'dumpHierarchies', "()$STRING");
-}
-
-
 method atom(Str() $iri --> Role) {
     my $jstr = jcall(&ldl_s2j, enc($iri));
     my $role = jcall(&ldl_o_o, $!kb, $jstr, 'role', "($STRING)$ROLE");
