@@ -110,12 +110,14 @@ role Rooted {
     }
 
     method jkb() { $!kb.kb }
+
+    method Str() { ~$!obj }
 }
 
 
 class Concept does Rooted {
     method not(--> Concept:D) {
-        my $not = jcall(&ldl_o_o, $!kb, $!obj, 'not', "($CONCEPT)$CONCEPT");
+        my $not = jcall(&ldl_o_o, $.jkb, $!obj, 'not', "($CONCEPT)$CONCEPT");
         return Concept.new: $!kb, $not;
     }
 
