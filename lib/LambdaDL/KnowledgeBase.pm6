@@ -45,6 +45,9 @@ sub ldl_o(JObject, Str, Str --> JObject)
 sub ldl_o_o(JObject, JObject, Str, Str --> JObject)
     is native('lambdadl') { ... }
 
+sub ldl_o_oo(JObject, JObject, JObject, Str, Str --> JObject)
+    is native('lambdadl') { ... }
+
 
 our $in-exception;
 
@@ -92,7 +95,7 @@ sub enc(Str:D $s) {
 
 role Rooted {
     has LambdaDL::KnowledgeBase:D $!kb  is required;
-    has JObject:D                 $!obj is required;
+    has JObject:D                 $.obj is required;
 
     submethod BUILD(:$!kb, :$obj) { $!obj = ldl_root($obj) }
 
@@ -101,21 +104,52 @@ role Rooted {
     method new(LambdaDL::KnowledgeBase:D $kb, JObject:D $obj) {
         return self.bless(:$kb, :$obj);
     }
+
+    method jkb() { $!kb.kb }
 }
 
 
-class Role does Rooted {
-    method invert() {
-        my $inv = jcall(&ldl_o_o, $!kb, $!obj, 'invert', "($ROLE)$ROLE");
-        return Role.new: $!kb, $inv;
+class Concept does Rooted {
+    method not(--> Concept:D) {
+        my $not = jcall(&ldl_o_o, $!kb, $!obj, 'not', "($CONCEPT)$CONCEPT");
+        return Concept.new: $!kb, $not;
+    }
+
+    method intersect(Concept() $with --> Concept:D) {
+        my $intersect = jcall(&ldl_o_oo, $.jkb, $!obj, $with.obj, 'intersect',
+                              "($CONCEPT$CONCEPT)$CONCEPT");
+        return Concept.new: $!kb, $intersect;
+    }
+
+    method union(Concept() $with --> Concept:D) {
+        my $union = jcall(&ldl_o_oo, $.jkb, $!obj, $with.obj, 'union',
+                          "($CONCEPT$CONCEPT)$CONCEPT");
+        return Concept.new: $!kb, $union;
     }
 }
 
 
-class Concept does Rooted {}
+class Role does Rooted {
+    method invert(--> Role:D) {
+        my $inv = jcall(&ldl_o_o, $.jkb, $!obj, 'invert', "($ROLE)$ROLE");
+        return Role.new: $!kb, $inv;
+    }
+
+    method exists(Concept() $in --> Concept:D) {
+        my $exists = jcall(&ldl_o_oo, $.jkb, $!obj, $in.obj, 'exists',
+                           "($ROLE$CONCEPT)$CONCEPT");
+        return Concept.new: $!kb, $exists;
+    }
+
+    method for-all(Concept() $in --> Concept:D) {
+        my $for-all = jcall(&ldl_o_oo, $.jkb, $!obj, $in.obj, 'forAll',
+                            "($ROLE$CONCEPT)$CONCEPT");
+        return Concept.new: $!kb, $for-all;
+    }
+}
 
 
-has JObject:D $!kb is required;
+has JObject:D $.kb is required;
 
 submethod BUILD(Str:D :$path) {
     $!kb = ldl_root(jcall(&ldl_new_KnowledgeBase, enc($path)));

@@ -52,4 +52,28 @@ class KnowledgeBase {
     public OWLClassExpression nothing() {
         return df.getOWLNothing();
     }
+
+    public OWLClassExpression not(OWLClassExpression c) {
+        return df.getOWLObjectComplementOf(c);
+    }
+
+    public OWLClassExpression intersect(OWLClassExpression a,
+                                        OWLClassExpression b) {
+        return df.getOWLObjectIntersectionOf(a, b);
+    }
+
+    public OWLClassExpression union(OWLClassExpression a,
+                                    OWLClassExpression b) {
+        return df.getOWLObjectUnionOf(a, b);
+    }
+
+    public OWLClassExpression exists(OWLObjectPropertyExpression r,
+                                     OWLClassExpression          c) {
+        return df.getOWLObjectSomeValuesFrom(r, c);
+    }
+
+    public OWLClassExpression forAll(OWLObjectPropertyExpression r,
+                                     OWLClassExpression          c) {
+        return df.getOWLObjectAllValuesFrom(r, c);
+    }
 }

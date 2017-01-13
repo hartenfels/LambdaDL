@@ -1,6 +1,7 @@
 unit module LambdaDL::TypeCheck;
 use LambdaDL::AST;
 use LambdaDL::Context;
+use LambdaDL::DL;
 
 
 sub xi(Context() $ctx, Str:D $msg) {
@@ -152,19 +153,8 @@ class Scope {
         return self.t($term).check-func($ctx, 'Fix').ret;
     }
 
-    multi method t([Atom, $iri]) {
-        return concept-type($.kb.atom($iri));
-    }
-
-    multi method t([Inverse, $atom]) {
-        return concept-type(self.t($atom).of.invert);
-    }
-
-    multi method t([Everything]) { concept-type($.kb.everything) }
-    multi method t([Nothing   ]) { concept-type($.kb.nothing   ) }
-
     multi method t([Query, $concept]) {
-        return self.t($concept);
+        return concept-type(dl($.kb, $concept));
     }
 
 

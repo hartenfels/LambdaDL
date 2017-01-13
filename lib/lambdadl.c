@@ -147,6 +147,11 @@ jobject ldl_o_o(jobject obj, jobject arg1, J_ARGS)
     return call_o(obj, name, signature, arg1);
 }
 
+jobject ldl_o_oo(jobject obj, jobject arg1, jobject arg2, J_ARGS)
+{
+    return call_o(obj, name, signature, arg1, arg2);
+}
+
 
 void ldl_v(jobject obj, const char *name)
 {
