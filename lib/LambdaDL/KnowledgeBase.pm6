@@ -11,12 +11,16 @@ sub jcall(&func, *@args) { ... }
 
 
 class JObject is repr('CPointer') {
-    method Str() {
+    method as-str() {
         my $buf;
         jcall(&ldl_j2s, self, sub (uint32 $len --> blob16) {
             return $buf = blob16.new(0 xx $len);
         });
         return $buf.decode('UTF-16');
+    }
+
+    method Str() {
+        return jcall(&ldl_o, self, 'toString', "()$STRING").as-str;
     }
 }
 
@@ -56,7 +60,7 @@ class X::Java is Exception is export {
 
     method message(--> Str) {
         temp $in-exception = True;
-        return ~jcall(&ldl_o, $!ex, 'getMessage', "()$STRING");
+        return jcall(&ldl_o, $!ex, 'getMessage', "()$STRING").as-str;
     }
 
     method print-stack-trace(--> X::Java:D) {
@@ -67,7 +71,7 @@ class X::Java is Exception is export {
 
     method class-name(--> Str) {
         temp $in-exception = True;
-        return ~ldl_get_class_name($!ex);
+        return ldl_get_class_name($!ex).as-str;
     }
 }
 
