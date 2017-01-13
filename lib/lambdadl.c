@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <errno.h>
 #include <jni.h>
 
 
@@ -32,23 +33,39 @@ static JavaVM *jvm = NULL;
 static JNIEnv *env = NULL;
 
 
-int ldl_init_jvm(void)
+int ldl_have_jvm(void)
+{
+    return env ? 1 : 0;
+}
+
+
+int ldl_init_jvm(char *optv[], int optc, int *error)
 {
     JavaVMInitArgs args;
-    JavaVMOption   options;
-    int            status;
+    JavaVMOption  *options;
+    int            i, status;
 
-    options.optionString    = "-Djava.class.path=vendor/HermiT.jar:blib";
+    if (!(options = calloc(optc, sizeof *options))) {
+        *error = errno;
+        return 1;
+    }
+
+    for (i = 0; i < optc; ++i) {
+        options[i].optionString = optv[i];
+    }
+
     args.version            = JNI_VERSION_1_8;
-    args.nOptions           = 1;
-    args.options            = &options;
+    args.nOptions           = optc;
+    args.options            = options;
     args.ignoreUnrecognized = 0;
 
     status = JNI_CreateJavaVM(&jvm, (void **)&env, &args);
 
+    free(options);
+
     if (status < 0 || !env) {
-        fprintf(stderr, "Can't start JVM: %d\n", status);
-        return -1;
+        *error = status;
+        return 2;
     }
 
     return 0;
@@ -69,10 +86,6 @@ jobject ldl_new_KnowledgeBase(const jchar *path, unsigned int len)
     jmethodID mid;
     jstring   str;
     jobject   obj;
-
-    if (!env && ldl_init_jvm() != 0) {
-        return NULL;
-    }
 
     J_FIND_CLASS(cls, "KnowledgeBase", NULL);
     J_FIND_METHOD(mid, cls, "<init>", "(Ljava/lang/String;)V", NULL);

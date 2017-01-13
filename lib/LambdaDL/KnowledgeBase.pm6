@@ -25,6 +25,12 @@ class JObject is repr('CPointer') {
 }
 
 
+sub ldl_have_jvm(--> int32)
+    is native('lambdadl') { ... }
+
+sub ldl_init_jvm(CArray[Str], int32, int32 is rw --> int32)
+    is native('lambdadl') { ... }
+
 sub ldl_check_exception(--> JObject)
     is native('lambdadl') { ... }
 
@@ -51,6 +57,28 @@ sub ldl_o_o(JObject, JObject, Str, Str --> JObject)
 
 sub ldl_o_oo(JObject, JObject, JObject, Str, Str --> JObject)
     is native('lambdadl') { ... }
+
+
+
+sub init-jvm() {
+    return False if ldl_have_jvm;
+
+    my $dir    = $?FILE.IO.parent.parent.parent;
+    my $hermit = $dir.child('vendor').child('HermiT.jar').absolute;
+    my $blib   = $dir.child('blib').absolute;
+
+    my CArray[Str] $opts .= new;
+    $opts[0] = "-Djava.class.path=$hermit\:$blib";
+
+    my int32 $error;
+
+    given ldl_init_jvm($opts, 1, $error) {
+        when 0  { return True                            }
+        when 1  { die "Can't set up JVM options: $error" }
+        when 2  { die "Can't create JVM: $error"         }
+        default { die "Unknown JVM init error: $error"   }
+    }
+}
 
 
 our $in-exception;
@@ -158,6 +186,7 @@ class Role does Rooted {
 has JObject:D $!kb is required;
 
 submethod BUILD(Str:D :$path) {
+    init-jvm;
     $!kb = ldl_root(jcall(&ldl_new_KnowledgeBase, enc($path)));
 }
 
