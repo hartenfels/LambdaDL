@@ -174,8 +174,7 @@ jobject ldl_get_class_name(jobject obj)
     J_GET_OBJECT_CLASS(cls, obj, NULL);
     J_FIND_METHOD(mid, cls, "getClass", "()Ljava/lang/Class;", NULL);
 
-    co = (*env)->CallObjectMethod(env, obj, mid);
-    if (!co) {
+    if (!(co = (*env)->CallObjectMethod(env, obj, mid))) {
         return NULL;
     }
 
