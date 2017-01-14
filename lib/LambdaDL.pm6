@@ -71,6 +71,8 @@ sub MAIN(Str $file, Str :output(:o($o))) {
     my IO::Handle $input  = source($file, $*IN, :r);
     my IO::Handle $output = source($o, $*OUT, :w) if defined $o;
 
+    chdir $file.IO.parent if $file ne '-';
+
     lambdadl($file, $input, $output);
 
     $output.close if $output;
