@@ -237,9 +237,6 @@ P6LIB = %P6LIB%
 GRAMMAR_IN  = $(wildcard t/grammar/data/*)
 GRAMMAR_OUT = $(addsuffix .t,$(subst data/,,$(GRAMMAR_IN)))
 
-TYPECHECK_IN  = $(wildcard t/typecheck/data/*)
-TYPECHECK_OUT = $(addsuffix .t,$(subst data/,,$(TYPECHECK_IN)))
-
 
 all: $(BLIB) lambdadl .passed
     @echo
@@ -262,10 +259,7 @@ blib/KnowledgeBase.class: lib/KnowledgeBase.java vendor/HermiT.jar | blib
 t/grammar/%.t: t/grammar/data/%
     @perl -pe 's{FILE}{$<}' < t/grammar/template.p6 > $@
 
-t/typecheck/%.t: t/typecheck/data/%
-    @perl -pe 's{FILE}{$<}' < t/typecheck/template.p6 > $@
-
-test: $(GRAMMAR_OUT) $(TYPECHECK_OUT)
+test: $(GRAMMAR_OUT)
     export LD_LIBRARY_PATH="blib:%LIBPATH%:$$LD_LIBRARY_PATH" PERL6LIB=lib; %PERL6% -c lib/LambdaDL.pm6 && prove -j 9 -e %PERL6% -r t
 
 .passed: Makefile $(BLIB) $(P6LIB)
@@ -279,7 +273,7 @@ lambdadl: share/bin-template.p6
 
 
 clean:
-    rm -rf blib lib/.precomp .passed t/grammar/*.t t/typecheck/*.t
+    rm -rf blib lib/.precomp .passed t/grammar/*.t
 
 realclean: clean
     rm -rf Makefile lambdadl
