@@ -24,19 +24,6 @@ is dl($kb, [Atom, 'What:Ever']),
    'dl for <What:Ever>';
 
 
-is dl($kb, [Inverse, [Atom, 'xsd:string']]),
-   'InverseOf(xsd:string)',
-   'dl for <xsd:string>⁻';
-
-is dl($kb, [Inverse, [Atom, ':MusicArtist']]),
-   'InverseOf(<http://example.org/music#MusicArtist>)',
-   'dl for <:MusicArtist>⁻';
-
-is dl($kb, [Inverse, [Atom, 'What:Ever']]),
-   'InverseOf(<What:Ever>)',
-   'dl for <What:Ever>⁻';
-
-
 is dl($kb, [Not, [Everything]]),
    'ObjectComplementOf(owl:Thing)',
    'dl for ¬⊤';

@@ -45,6 +45,10 @@ class KnowledgeBase {
     }
 
 
+    public OWLClassExpression concept(String s) {
+        return df.getOWLClass(toIRI(s));
+    }
+
     public OWLClassExpression everything() {
         return df.getOWLThing();
     }

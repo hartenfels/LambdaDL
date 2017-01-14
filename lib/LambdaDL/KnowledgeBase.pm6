@@ -204,6 +204,12 @@ method atom(Str() $iri --> Role) {
 }
 
 
+method concept(Str() $iri --> Concept:D) {
+    my $jstr    = jcall(&ldl_s2j, enc($iri));
+    my $concept = jcall(&ldl_o_o, $!kb, $jstr, 'concept', "($STRING)$CONCEPT");
+    return Concept.new: self, $concept;
+}
+
 method everything(--> Concept:D) {
     my $top = jcall(&ldl_o, $!kb, 'everything', "()$CONCEPT");
     return Concept.new: self, $top;
