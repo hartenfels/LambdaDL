@@ -22,6 +22,28 @@ constant \preamble := q:to/END_OF_PREAMBLE/;
 has $.ast;
 
 
+method gen-kb() {
+    my $body;
+
+    with $.ast.path {
+        my $lib  = $?FILE.IO.parent.parent.absolute;
+        my $path = .IO.absolute;
+        $body    = qq:to/END_OF_KB/;
+            use lib '$lib';
+            state \$base = LambdaDL::KnowledgeBase.new('$path');
+            return \$base;
+        END_OF_KB
+    }
+    else {
+        $body = q:to/END_OF_KB/;
+            die "Can't query knowledge base without a data source";
+        END_OF_KB
+    }
+
+    return "my \$kb = sub kb() \{\n$body};\n";
+}
+
+
 multi method gen($_: [Primitive, Bool $b]) { $b ?? 'True' !! 'False' }
 multi method gen($_: [Primitive, Str  $s]) { qq/"$s"/  }
 
@@ -66,7 +88,7 @@ multi method gen($_: [Fix, $term]) {
 }
 
 
-method generate() { "{preamble}\n{self.gen($.ast.term)}\n" }
+method generate() { "{preamble}\n{self.gen-kb}\n{self.gen($.ast.term)}\n" }
 
 sub generate($ast) is export {
     return LambdaDL::Generator.new(:$ast).generate;
