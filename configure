@@ -196,15 +196,20 @@ if ($errors) {
 my @inc_flags = map { "-I$_" } @java_inc;
 my @lib_flags = map { "-L$_" } @java_lib;
 
+my @grammar_in  = glob 't/grammar/data/*.lambda';
+s{data/(.+?)\.lambda$}{$1.t}g for my @grammar_out = @grammar_in;
+
 my %template = (
-    PERL6    => $p6,
-    JAVAC    => $jc,
-    CFLAGS   => join(' ', @inc_flags, $cflags),
-    LDFLAGS  => join(' ', @lib_flags, $ldflags),
-    LIBPATH  => join(':', @java_lib),
-    P6LIB    => join(' ', find_files(qr/\.pm6$/, 'lib')),
-    TESTS    => join(' ', find_files(qr/./,      't'  )),
-    DATETIME => strftime('%Y-%m-%d %H:%M:%S', localtime),
+    PERL6       => $p6,
+    JAVAC       => $jc,
+    CFLAGS      => join(' ', @inc_flags, $cflags),
+    LDFLAGS     => join(' ', @lib_flags, $ldflags),
+    LIBPATH     => join(':', @java_lib),
+    P6LIB       => join(' ', find_files(qr/\.pm6$/, 'lib')),
+    TESTS       => join(' ', find_files(qr/\.t$/,   't'  )),
+    GRAMMAR_IN  => join(' ', @grammar_in ),
+    GRAMMAR_OUT => join(' ', @grammar_out),
+    DATETIME    => strftime('%Y-%m-%d %H:%M:%S', localtime),
 );
 
 
@@ -236,8 +241,8 @@ BLIB  = blib/liblambdadl.so blib/KnowledgeBase.class
 P6LIB = %P6LIB%
 TESTS = %TESTS%
 
-GRAMMAR_IN  = $(wildcard t/grammar/data/*)
-GRAMMAR_OUT = $(subst .lambda,.t,$(subst data/,,$(GRAMMAR_IN)))
+GRAMMAR_IN  = %GRAMMAR_IN%
+GRAMMAR_OUT = %GRAMMAR_OUT%
 
 
 all: $(BLIB) lambdadl .passed
@@ -264,7 +269,7 @@ t/grammar/%.t: t/grammar/data/%.lambda
 test: $(GRAMMAR_OUT)
     export LD_LIBRARY_PATH="blib:%LIBPATH%:$$LD_LIBRARY_PATH" PERL6LIB=lib; %PERL6% -c lib/LambdaDL.pm6 && prove -j 9 -e %PERL6% -r t
 
-.passed: Makefile $(BLIB) $(P6LIB) $(TESTS)
+.passed: Makefile $(BLIB) $(P6LIB) $(TESTS) $(GRAMMAR_IN)
     make -s test
     touch $@
 
