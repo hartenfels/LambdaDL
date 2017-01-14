@@ -237,7 +237,7 @@ P6LIB = %P6LIB%
 TESTS = %TESTS%
 
 GRAMMAR_IN  = $(wildcard t/grammar/data/*)
-GRAMMAR_OUT = $(addsuffix .t,$(subst data/,,$(GRAMMAR_IN)))
+GRAMMAR_OUT = $(subst .lambda,.t,$(subst data/,,$(GRAMMAR_IN)))
 
 
 all: $(BLIB) lambdadl .passed
@@ -258,7 +258,7 @@ blib/KnowledgeBase.class: lib/KnowledgeBase.java vendor/HermiT.jar | blib
     %JAVAC% $(JFLAGS) $<
 
 
-t/grammar/%.t: t/grammar/data/%
+t/grammar/%.t: t/grammar/data/%.lambda
     @perl -pe 's{FILE}{$<}' < t/grammar/template.p6 > $@
 
 test: $(GRAMMAR_OUT)
