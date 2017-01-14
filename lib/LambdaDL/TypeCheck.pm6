@@ -17,7 +17,7 @@ class Type {
     method Str() { $.id }
 
     method unifies-with($other) {
-        return self eqv $other ?? self !! Type;
+        return $other ~~ self.WHAT && self.unify($other) ?? self !! Type;
     }
 
     method check($other, $ctx, $fmt) {
@@ -31,17 +31,21 @@ class Type {
 class Type::Unknown is Type {
     method id() { '(unknown)' }
 
-    method unifies-with($) { Type }
+    method unify($) { False }
 }
 
 class Type::Primitive is Type {
     has Str:D $.id is required;
+
+    method unify($other) { $.id eq $other.id }
 }
 
 class Type::List is Type {
     has Type:D $.of is required;
 
     method id() { $.of ~ '[]' }
+
+    method unify($other) { $.of.unifies-with($other.of) }
 
     method check-list($, $) { self }
 }
@@ -52,13 +56,24 @@ class Type::Func is Type {
 
     method id() { "($.arg → $.ret)" }
 
+    method unify($other) {
+        return $.arg.unifies-with($other.arg) && $.ret.unifies-with($other.ret);
+    }
+
     method check-func($, $) { self }
 }
 
 class Type::Concept is Type {
     has $.of is required;
 
-    method id() { $.of }
+    method id() { "$.of" }
+
+    method unify($other) { $.of.comparable($other.of) }
+
+    method check-sat($ctx, $fmt) {
+        xt $ctx, $fmt, self unless $.of.satisfiable;
+        return self;
+    }
 }
 
 
@@ -153,8 +168,9 @@ class Scope {
         return self.t($term).check-func($ctx, 'Fix').ret;
     }
 
-    multi method t([Query, $concept]) {
-        return concept-type(dl($.kb, $concept));
+    multi method t([Query $ctx, $concept]) {
+        my $type = concept-type(dl($.kb, $concept)).check-sat($ctx, 'Query');
+        return list-type $type;
     }
 
 

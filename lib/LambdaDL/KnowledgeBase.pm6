@@ -46,7 +46,10 @@ sub ldl_new_KnowledgeBase(blob16, uint32 --> JObject)
 sub ldl_root  (JObject --> JObject) is native('lambdadl') { ... }
 sub ldl_unroot(JObject)             is native('lambdadl') { ... }
 
-sub ldl_v(JObject, Str)
+sub ldl_b_o(JObject, JObject, Str, Str --> int32)
+    is native('lambdadl') { ... }
+
+sub ldl_b_oo(JObject, JObject, JObject, Str, Str --> int32)
     is native('lambdadl') { ... }
 
 sub ldl_o(JObject, Str, Str --> JObject)
@@ -58,6 +61,8 @@ sub ldl_o_o(JObject, JObject, Str, Str --> JObject)
 sub ldl_o_oo(JObject, JObject, JObject, Str, Str --> JObject)
     is native('lambdadl') { ... }
 
+sub ldl_v(JObject, Str)
+    is native('lambdadl') { ... }
 
 
 sub init-jvm() {
@@ -159,6 +164,15 @@ class Concept does Rooted {
         my $union = jcall(&ldl_o_oo, $!kb, $!obj, $with, 'union',
                           "($CONCEPT$CONCEPT)$CONCEPT");
         return Concept.new: $!kb, $union;
+    }
+
+    method satisfiable(--> Bool:D) {
+        return so jcall(&ldl_b_o, $!kb, $!obj, 'satisfiable', "($CONCEPT)Z");
+    }
+
+    method comparable(Concept() $with --> Bool:D) {
+        return so jcall(&ldl_b_oo, $!kb, $!obj, $with, 'comparable',
+                        "($CONCEPT$CONCEPT)Z");
     }
 }
 

@@ -91,3 +91,7 @@ class X::LambdaDL::TBranch is X::LambdaDL::T is export {
 class X::LambdaDL::TFix is X::LambdaDL::T is export {
     method fmt() { "can't fix a %s" }
 }
+
+class X::LambdaDL::TQuery is X::LambdaDL::T is export {
+    method fmt() { "query %s is unsatisfiable" }
+}

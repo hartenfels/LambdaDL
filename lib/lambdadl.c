@@ -8,6 +8,8 @@
 
 #define NOTHING
 
+#define BOOLIFY(EXPR) ((EXPR) ? 1 : 0)
+
 #define J_FIND_CLASS(cls, name, retval) \
     if (!(cls = (*env)->FindClass(env, name))) { \
         fprintf(stderr, "Can't find class '%s'\n", name); \
@@ -26,7 +28,25 @@
         return retval; \
     }
 
-#define J_ARGS const char *name, const char *signature
+#define D_CALL(RETTYPE, NAME, CALL) \
+    static RETTYPE NAME (jobject obj, const char *name, const char *sig, ...) \
+    { \
+        va_list   args; \
+        jclass    cls; \
+        jmethodID mid; \
+        RETTYPE   ret; \
+        \
+        J_GET_OBJECT_CLASS(cls, obj, 0); \
+        J_FIND_METHOD(mid, cls, name, sig, 0); \
+        \
+        va_start(args, sig); \
+        ret = (*env)-> CALL (env, obj, mid, args); \
+        va_end(args); \
+        \
+        return ret; \
+    }
+
+#define D_ARGS const char *name, const char *sig
 
 
 static JavaVM *jvm = NULL;
@@ -35,7 +55,7 @@ static JNIEnv *env = NULL;
 
 int ldl_have_jvm(void)
 {
-    return env ? 1 : 0;
+    return BOOLIFY(env);
 }
 
 
@@ -133,36 +153,34 @@ void ldl_j2s(jstring str, jchar *(*gimme_buf)(unsigned int))
 }
 
 
-static jobject call_o(jobject obj, const char *name, const char *signature, ...)
+D_CALL(jobject, call_o, CallObjectMethodV)
+
+jobject ldl_o(jobject obj, D_ARGS)
 {
-    va_list   args;
-    jclass    cls;
-    jmethodID mid;
-    jobject   ret;
-
-    J_GET_OBJECT_CLASS(cls, obj, NULL);
-    J_FIND_METHOD(mid, cls, name, signature, NULL);
-
-    va_start(args, signature);
-    ret = (*env)->CallObjectMethodV(env, obj, mid, args);
-    va_end(args);
-
-    return ret;
+    return call_o(obj, name, sig);
 }
 
-jobject ldl_o(jobject obj, J_ARGS)
+jobject ldl_o_o(jobject obj, jobject arg1, D_ARGS)
 {
-    return call_o(obj, name, signature);
+    return call_o(obj, name, sig, arg1);
 }
 
-jobject ldl_o_o(jobject obj, jobject arg1, J_ARGS)
+jobject ldl_o_oo(jobject obj, jobject arg1, jobject arg2, D_ARGS)
 {
-    return call_o(obj, name, signature, arg1);
+    return call_o(obj, name, sig, arg1, arg2);
 }
 
-jobject ldl_o_oo(jobject obj, jobject arg1, jobject arg2, J_ARGS)
+
+D_CALL(jboolean, call_b, CallBooleanMethodV)
+
+int ldl_b_o(jobject obj, jobject arg1, D_ARGS)
 {
-    return call_o(obj, name, signature, arg1, arg2);
+    return BOOLIFY(call_b(obj, name, sig, arg1));
+}
+
+int ldl_b_oo(jobject obj, jobject arg1, jobject arg2, D_ARGS)
+{
+    return BOOLIFY(call_b(obj, name, sig, arg1, arg2));
 }
 
 

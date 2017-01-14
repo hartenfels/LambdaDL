@@ -80,4 +80,13 @@ class KnowledgeBase {
                                      OWLClassExpression          c) {
         return df.getOWLObjectAllValuesFrom(r, c);
     }
+
+
+    public boolean satisfiable(OWLClassExpression c) {
+        return hermit.isSatisfiable(c);
+    }
+
+    public boolean comparable(OWLClassExpression a, OWLClassExpression b) {
+        return satisfiable(intersect(a, b));
+    }
 }
