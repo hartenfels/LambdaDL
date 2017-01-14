@@ -153,6 +153,9 @@ role Rooted {
 }
 
 
+class Individual does Rooted {}
+
+
 class Concept does Rooted {
     method not(--> Concept:D) {
         my $not = jcall(&ldl_o_o, $!kb, $!obj, 'not', "($CONCEPT)$CONCEPT");
@@ -179,6 +182,16 @@ class Concept does Rooted {
         return so jcall(&ldl_b_oo, $!kb, $!obj, $with, 'comparable',
                         "($CONCEPT$CONCEPT)Z");
     }
+
+    method query(--> Array) {
+        my $found = jcall &ldl_o_o, $!kb, $!obj, 'query',
+                          "($CONCEPT)[$INDIVIDUAL";
+        my $accu = [];
+        jcall &ldl_each, $found, -> JObject $obj {
+            $accu.push(Individual.new: $!kb, $obj);
+        };
+        return $accu;
+    }
 }
 
 
@@ -200,9 +213,6 @@ class Role does Rooted {
         return Concept.new: $!kb, $for-all;
     }
 }
-
-
-class Individual does Rooted {}
 
 
 has JObject:D $!kb is required;
@@ -240,15 +250,4 @@ method everything(--> Concept:D) {
 method nothing(--> Concept:D) {
     my $bot = jcall(&ldl_o, $!kb, 'nothing', "()$CONCEPT");
     return Concept.new: self, $bot;
-}
-
-
-method query(Concept() $concept --> Array) {
-    my $found = jcall &ldl_o_o, $!kb, $concept, 'query',
-                      "($CONCEPT)[$INDIVIDUAL";
-    my $accu = [];
-    jcall &ldl_each, $found, -> JObject $obj {
-        $accu.push(Individual.new: self, $obj);
-    };
-    return $accu;
 }
