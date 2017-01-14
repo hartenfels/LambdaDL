@@ -92,8 +92,7 @@ class KnowledgeBase {
     }
 
 
-    public OWLNamedIndividual[] query(OWLClassExpression c)
-    {
+    public OWLNamedIndividual[] query(OWLClassExpression c) {
         return hermit
             .getInstances(c, false)
             .getFlattened()
