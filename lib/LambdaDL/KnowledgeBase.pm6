@@ -183,13 +183,16 @@ class Concept does Rooted {
                         "($CONCEPT$CONCEPT)Z");
     }
 
-    method query(--> Array) {
+    method query(--> Array[Individual]) {
         my $found = jcall &ldl_o_o, $!kb, $!obj, 'query',
                           "($CONCEPT)[$INDIVIDUAL";
-        my $accu = [];
+
+        my Array[Individual] $accu .= new;
+
         jcall &ldl_each, $found, -> JObject $obj {
             $accu.push(Individual.new: $!kb, $obj);
         };
+
         return $accu;
     }
 }
