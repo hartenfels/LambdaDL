@@ -203,6 +203,7 @@ my %template = (
     LDFLAGS  => join(' ', @lib_flags, $ldflags),
     LIBPATH  => join(':', @java_lib),
     P6LIB    => join(' ', find_files(qr/\.pm6$/, 'lib')),
+    TESTS    => join(' ', find_files(qr/./,      't'  )),
     DATETIME => strftime('%Y-%m-%d %H:%M:%S', localtime),
 );
 
@@ -233,6 +234,7 @@ JFLAGS  = -d blib -classpath vendor/HermiT.jar
 
 BLIB  = blib/liblambdadl.so blib/KnowledgeBase.class
 P6LIB = %P6LIB%
+TESTS = %TESTS%
 
 GRAMMAR_IN  = $(wildcard t/grammar/data/*)
 GRAMMAR_OUT = $(addsuffix .t,$(subst data/,,$(GRAMMAR_IN)))
@@ -262,7 +264,7 @@ t/grammar/%.t: t/grammar/data/%
 test: $(GRAMMAR_OUT)
     export LD_LIBRARY_PATH="blib:%LIBPATH%:$$LD_LIBRARY_PATH" PERL6LIB=lib; %PERL6% -c lib/LambdaDL.pm6 && prove -j 9 -e %PERL6% -r t
 
-.passed: Makefile $(BLIB) $(P6LIB)
+.passed: Makefile $(BLIB) $(P6LIB) $(TESTS)
     make -s test
     touch $@
 
