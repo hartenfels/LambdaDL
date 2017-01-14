@@ -211,3 +211,13 @@ jobject ldl_get_class_name(jobject obj)
 
     return ldl_o(co, "getName", "()Ljava/lang/String;");
 }
+
+
+void ldl_each(jarray arr, void (*callback)(jobject))
+{
+    jsize i, len;
+
+    for (i = 0, len = (*env)->GetArrayLength(env, arr); i < len; ++i) {
+        callback((*env)->GetObjectArrayElement(env, arr, i));
+    }
+}

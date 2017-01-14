@@ -26,11 +26,8 @@ method gen-kb() {
     my $body;
 
     with $.ast.path {
-        my $lib  = $?FILE.IO.parent.parent.absolute;
-        my $path = .IO.absolute;
-        $body    = qq:to/END_OF_KB/;
-            use lib '$lib';
-            state \$base = LambdaDL::KnowledgeBase.new('$path');
+        $body = qq:to/END_OF_KB/;
+            state \$base = LambdaDL::KnowledgeBase.new(｢{.IO.absolute}｣);
             return \$base;
         END_OF_KB
     }
@@ -87,8 +84,33 @@ multi method gen($_: [Fix, $term]) {
     "\$fix.({.gen: $term})"
 }
 
+multi method gen($_: [[Atom,    $iri ]]) { "\$kb().atom(｢$iri｣)"  }
+multi method gen($_: [[Inverse, $atom]]) { "{.gen: [$atom]}.invert" }
 
-method generate() { "{preamble}\n{self.gen-kb}\n{self.gen($.ast.term)}\n" }
+multi method gen($_: [Atom, $iri]) { "\$kb().concept(｢$iri｣)" }
+
+multi method gen($_: [Everything]) { '$kb().everything()' }
+multi method gen($_: [Nothing   ]) { '$kb().nothing()'    }
+
+multi method gen($_: [Not, $concept]) { "{.gen: $concept}.not" }
+
+multi method gen($_: [Intersect, $a, $b]) { "{.gen: $a}.intersect({.gen: $b})" }
+multi method gen($_: [Union,     $a, $b]) { "{.gen: $a}.union({    .gen: $b})" }
+
+multi method gen($_: [Exists, $r, $c]) { "{.gen: [$r]}.exists({ .gen: $c})" }
+multi method gen($_: [ForAll, $r, $c]) { "{.gen: [$r]}.for-all({.gen: $c})" }
+
+multi method gen($_: [Query, $dl]) { "\$kb().query({.gen: $dl})" }
+
+
+method generate() {
+    return qq:to/END_OF_CODE/;
+        use lib ｢{$?FILE.IO.parent.parent.absolute}｣;\n
+        {preamble}
+        {self.gen-kb}
+        {self.gen($.ast.term)}
+        END_OF_CODE
+}
 
 sub generate($ast) is export {
     return LambdaDL::Generator.new(:$ast).generate;

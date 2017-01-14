@@ -16,11 +16,17 @@ sub eval($file) {
 }
 
 
+sub iri($id) { "<http://example.org/music#$id>" }
+
+
 cmp-ok eval('list'), 'eqv', ['same', 'different', 'different', 'same'],
        'list test results in expected list';
 
 
 cmp-ok eval('rec'), 'eqv', False, 'recursion test with fix point works';
+
+
+is eval('query').gist, "[{iri 'beatles'} {iri 'hendrix'}]", 'query execution';
 
 
 done-testing;

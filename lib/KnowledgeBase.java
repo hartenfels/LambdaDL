@@ -6,6 +6,7 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -88,5 +89,14 @@ class KnowledgeBase {
 
     public boolean comparable(OWLClassExpression a, OWLClassExpression b) {
         return satisfiable(intersect(a, b));
+    }
+
+
+    public OWLNamedIndividual[] query(OWLClassExpression c)
+    {
+        return hermit
+            .getInstances(c, false)
+            .getFlattened()
+            .toArray(new OWLNamedIndividual[0]);
     }
 }

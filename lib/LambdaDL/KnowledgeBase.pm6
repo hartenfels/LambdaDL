@@ -2,9 +2,10 @@ unit class LambdaDL::KnowledgeBase;
 use NativeCall;
 
 
-constant $STRING  = 'Ljava/lang/String;';
-constant $ROLE    = 'Lorg/semanticweb/owlapi/model/OWLObjectPropertyExpression;';
-constant $CONCEPT = 'Lorg/semanticweb/owlapi/model/OWLClassExpression;';
+constant $STRING     = 'Ljava/lang/String;';
+constant $ROLE       = 'Lorg/semanticweb/owlapi/model/OWLObjectPropertyExpression;';
+constant $CONCEPT    = 'Lorg/semanticweb/owlapi/model/OWLClassExpression;';
+constant $INDIVIDUAL = 'Lorg/semanticweb/owlapi/model/OWLNamedIndividual;';
 
 
 sub jcall(&func, *@args) { ... }
@@ -62,6 +63,9 @@ sub ldl_o_oo(JObject, JObject, JObject, Str, Str --> JObject)
     is native('lambdadl') { ... }
 
 sub ldl_v(JObject, Str)
+    is native('lambdadl') { ... }
+
+sub ldl_each(JObject, & (JObject))
     is native('lambdadl') { ... }
 
 
@@ -143,6 +147,7 @@ role Rooted {
         return self.bless(:$kb, :$obj);
     }
 
+    method gist   () { ~$!obj }
     method Str    () { ~$!obj }
     method JObject() {  $!obj }
 }
@@ -197,6 +202,9 @@ class Role does Rooted {
 }
 
 
+class Individual does Rooted {}
+
+
 has JObject:D $!kb is required;
 
 submethod BUILD(Str:D :$path) {
@@ -232,4 +240,15 @@ method everything(--> Concept:D) {
 method nothing(--> Concept:D) {
     my $bot = jcall(&ldl_o, $!kb, 'nothing', "()$CONCEPT");
     return Concept.new: self, $bot;
+}
+
+
+method query(Concept() $concept --> Array) {
+    my $found = jcall &ldl_o_o, $!kb, $concept, 'query',
+                      "($CONCEPT)[$INDIVIDUAL";
+    my $accu = [];
+    jcall &ldl_each, $found, -> JObject $obj {
+        $accu.push(Individual.new: self, $obj);
+    };
+    return $accu;
 }
