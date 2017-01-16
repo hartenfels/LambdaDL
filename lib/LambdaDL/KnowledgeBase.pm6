@@ -261,6 +261,13 @@ method nothing(--> Concept:D) {
 }
 
 
+method nominal(Str() $iri --> Individual:D) {
+    my $jstr       = jcall &ldl_s2j, enc($iri);
+    my $individual = jcall &ldl_o_o, $!kb, $jstr, 'nominal',
+                           "($STRING)$INDIVIDUAL";
+    return Individual.new: self, $individual;
+}
+
 method individuals(JObject() $jarray --> Array[Individual]) {
     my Array[Individual] $accu .= new;
     jcall &ldl_each, $jarray, -> JObject $obj {

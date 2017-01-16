@@ -59,6 +59,11 @@ class KnowledgeBase {
         return df.getOWLNothing();
     }
 
+    public OWLNamedIndividual nominal(String s) {
+        return df.getOWLNamedIndividual(toIRI(s));
+    }
+
+
     public OWLClassExpression not(OWLClassExpression c) {
         return df.getOWLObjectComplementOf(c);
     }

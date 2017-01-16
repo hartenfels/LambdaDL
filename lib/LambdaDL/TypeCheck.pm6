@@ -224,6 +224,10 @@ class Scope {
         return self.t($term).check-func($ctx, 'Fix').ret;
     }
 
+    multi method t([Obj, [Atom, $iri]]) {
+        return concept-type $.kb.concept($iri);
+    }
+
     multi method t([Query $ctx, $concept]) {
         my $type = concept-type(dl($.kb, $concept)).check-sat($ctx, 'Query');
         return list-type $type;

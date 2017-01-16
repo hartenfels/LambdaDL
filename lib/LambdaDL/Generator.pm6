@@ -108,6 +108,8 @@ multi method gen($_: [Union,     $a, $b]) { "{.gen: $a}.union({    .gen: $b})" }
 multi method gen($_: [Exists, $r, $c]) { "{.gen: [$r]}.exists({ .gen: $c})" }
 multi method gen($_: [ForAll, $r, $c]) { "{.gen: [$r]}.for-all({.gen: $c})" }
 
+multi method gen($_: [Obj, [Atom, $iri]]) { "\$kb().nominal(｢$iri｣)" }
+
 multi method gen($_: [Query, $dl]) { "{.gen: $dl}.query" }
 
 multi method gen($_: [Projection, $term, $role]) {
