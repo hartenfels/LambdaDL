@@ -16,6 +16,11 @@ constant \preamble := q:to/END_OF_PREAMBLE/;
     my $fix = sub fix($f) {
         return (-> $x { $x.($x) }).(-> $y { $f.(-> $x { $y.($y).($x) }) });
     };
+
+    multi infix:<eqv>(LambdaDL::KnowledgeBase::Individual $a,
+                      LambdaDL::KnowledgeBase::Individual $b) {
+        return $a.same-as($b);
+    }
     END_OF_PREAMBLE
 
 

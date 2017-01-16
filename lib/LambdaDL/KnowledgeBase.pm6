@@ -220,6 +220,11 @@ class Individual does Rooted {
         return $!kb.individuals: jcall &ldl_o_oo, $!kb, $!obj, $on, 'project',
                                        "($INDIVIDUAL$ROLE)[$INDIVIDUAL";
     }
+
+    method same-as(Individual() $other --> Bool:D) {
+        return so jcall &ldl_b_oo, $!kb, $!obj, $other, 'same',
+                        "($INDIVIDUAL$INDIVIDUAL)Z";
+    }
 }
 
 

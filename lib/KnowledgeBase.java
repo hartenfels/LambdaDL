@@ -117,4 +117,8 @@ class KnowledgeBase {
         return  hermit.isEntailed(df.getOWLClassAssertionAxiom(c, i))
             && !hermit.isEntailed(df.getOWLClassAssertionAxiom(d, i));
     }
+
+    public boolean same(OWLNamedIndividual a, OWLNamedIndividual b) {
+        return hermit.isSameIndividual(a, b);
+    }
 }
