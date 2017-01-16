@@ -105,4 +105,11 @@ class KnowledgeBase {
                                         OWLObjectPropertyExpression r) {
         return individuals(hermit.getObjectPropertyValues(i, r));
     }
+
+
+    public boolean member(OWLNamedIndividual i, OWLClassExpression c) {
+        OWLClassExpression d = df.getOWLObjectComplementOf(c);
+        return  hermit.isEntailed(df.getOWLClassAssertionAxiom(c, i))
+            && !hermit.isEntailed(df.getOWLClassAssertionAxiom(d, i));
+    }
 }

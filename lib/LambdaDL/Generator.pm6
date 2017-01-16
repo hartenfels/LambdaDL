@@ -114,6 +114,15 @@ multi method gen($_: [Projection, $term, $role]) {
     "{.gen: $term}.project({.gen: [$role]})"
 }
 
+multi method gen($_: [Case, $concept, [Identifier, $name], $term]) {
+    "when {.gen: $concept}.like(\$_) \{ my \\$name := \$_; {.gen: $term} };"
+}
+
+multi method gen($_: [Switch, $topic, $default, *@cases]) {
+    my $inner = join ' ', map { .gen($^a) }, @cases;
+    "do given {.gen: $topic} \{ $inner default \{ {.gen: $default} } }"
+}
+
 
 method generate() {
     return qq:to/END_OF_CODE/;

@@ -235,6 +235,22 @@ class Scope {
         return list-type concept-type $proj;
     }
 
+    multi method t([Switch $ctx, $topic, $default, *@cases]) {
+        my $topic-type = self.t($topic).check-concept($ctx, 'Topic');
+
+        my &case = sub ([Case $ctx, $concept, [Identifier, $name], $term]) {
+            my $case-type = concept-type dl($.kb, $concept);
+
+            xt $ctx, 'Case', $case-type, $topic-type
+                unless $case-type.unifies-with($topic-type);
+
+            my $inner = self.subscope($name, $case-type);
+            return $inner.t($term);
+        };
+
+        return self.join-types($ctx, |map(&case, @cases), self.t($default));
+    }
+
 
     method check() { self.t($.ast.term) }
 }

@@ -115,3 +115,11 @@ class X::LambdaDL::TQuery is X::LambdaDL::T is export {
 class X::LambdaDL::TProjection is X::LambdaDL::T is export {
     method fmt() { "can't project on a %s" }
 }
+
+class X::LambdaDL::TSwitch is X::LambdaDL::T is export {
+    method fmt() { "case topic %s isn't a semantic type" }
+}
+
+class X::LambdaDL::TCase is X::LambdaDL::T is export {
+    method fmt() { "matching %s against %s will never work" }
+}

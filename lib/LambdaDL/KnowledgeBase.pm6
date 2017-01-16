@@ -187,6 +187,11 @@ class Concept does Rooted {
         return $!kb.individuals: jcall &ldl_o_o, $!kb, $!obj, 'query',
                                        "($CONCEPT)[$INDIVIDUAL";
     }
+
+    method like(Individual() $individual --> Bool:D) {
+        return so jcall &ldl_b_oo, $!kb, $individual, $!obj, 'member',
+                        "($INDIVIDUAL$CONCEPT)Z";
+    }
 }
 
 
