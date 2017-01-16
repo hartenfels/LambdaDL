@@ -102,10 +102,13 @@ multi method gen($_: [ForAll, $r, $c]) { "{.gen: [$r]}.for-all({.gen: $c})" }
 
 multi method gen($_: [Query, $dl]) { "{.gen: $dl}.query" }
 
+multi method gen($_: [Projection, $term, $role]) {
+    "{.gen: $term}.project({.gen: [$role]})"
+}
+
 
 method generate() {
     return qq:to/END_OF_CODE/;
-        use lib ｢{$?FILE.IO.parent.parent.absolute}｣;\n
         {preamble}
         {self.gen-kb}
         {self.gen($.ast.term)}

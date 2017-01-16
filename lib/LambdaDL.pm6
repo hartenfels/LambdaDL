@@ -27,6 +27,25 @@ sub eject($!, $file, $symbol = '⏏') {
 }
 
 
+sub ready-output($code) {
+    return qq:to/END_OF_CODE/;
+        #!$*EXECUTABLE
+        use lib ｢$?FILE.IO.parent.absolute()｣;
+        use LambdaDL::KnowledgeBase;
+
+        unless \%*ENV<LAMBDADL_SET_UP> \{
+            \%*ENV<LAMBDADL_SET_UP> = '1';
+            \%*ENV<LD_LIBRARY_PATH> = ｢%*ENV<LD_LIBRARY_PATH>｣;
+            exit run(\$*EXECUTABLE, \$?FILE, |@*ARGS).exitcode;
+        }
+
+        say do \{
+        $code.trim.indent(4)
+        };
+        END_OF_CODE
+}
+
+
 sub lambdadl(Str:D $file, IO::Handle:D $input, IO::Handle $output?) is export {
     my $text = $input.slurp-rest;
     my $ast  = try LambdaDL::Parser.parse($text);
@@ -48,7 +67,7 @@ sub lambdadl(Str:D $file, IO::Handle:D $input, IO::Handle $output?) is export {
     my $code = generate($ast);
 
     if $output {
-        $output.print("say do \{\n{$code.indent(4)}}\n");
+        $output.print(ready-output($code));
     }
     else {
         use MONKEY-SEE-NO-EVAL;
@@ -76,4 +95,5 @@ sub MAIN(Str $file, Str :output(:o($o))) {
     lambdadl($file, $input, $output);
 
     $output.close if $output;
+    chmod 0o755, $o if defined $o && $o ne '-';
 }
