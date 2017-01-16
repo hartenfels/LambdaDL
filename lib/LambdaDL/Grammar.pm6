@@ -158,7 +158,7 @@ token ws { <blank>* }
 proto token blank { * }
 
 token blank:sym<line > { '//' \V* }
-token blank:sym<block> { '/*' .*? <.RComment> }
+token blank:sym<block> { '/*' ~ '*/' [.*?] }
 token blank:sym<plain> { \s+ }
 
 
@@ -185,7 +185,6 @@ token Of       { 'of'      || <needed("'of'"     )> }
 token Quote    { '"'       || <needed("'\"'"     )> }
 token RAngle   { '>'       || <needed("'>'"      )> }
 token RBracket { ']'       || <needed("']'"      )> }
-token RComment { '*/'      || <needed("'*/'"     )> }
 token RParen   { ')'       || <needed("')'"      )> }
 token Then     { 'then'    || <needed("'then'"   )> }
 
