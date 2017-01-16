@@ -232,7 +232,11 @@ submethod BUILD(Str:D :$path) {
 
 submethod DESTROY { ldl_unroot($!kb) }
 
-method new(Str() $path) { self.bless(:$path) }
+method new(Str $at) {
+    state %cache;
+    my $path = $at.IO.absolute;
+    return %cache{$path} //= self.bless(:$path);
+}
 
 method JObject() { $!kb }
 

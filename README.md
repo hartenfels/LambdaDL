@@ -25,6 +25,4 @@ Then you can run `./lambdadl` proper.
 
 ## TODO
 
-* Nominal objects
-
 * Precedence of `=`
