@@ -23,6 +23,8 @@ Then run `make` to build the Java and C libraries.
 Then you can run `./lambdadl` proper.
 
 
-## TODO
+## BUGS
 
-* Precedence of `=`
+* Precedence of `=` is too high and doesn't list associate.
+
+* Type checking for nominal concepts might be wrong?
