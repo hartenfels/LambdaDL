@@ -107,3 +107,7 @@ class X::LambdaDL::TFix is X::LambdaDL::T is export {
 class X::LambdaDL::TQuery is X::LambdaDL::T is export {
     method fmt() { "query %s is unsatisfiable" }
 }
+
+class X::LambdaDL::TProjection is X::LambdaDL::T is export {
+    method fmt() { "can't project on a %s" }
+}

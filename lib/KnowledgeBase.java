@@ -10,6 +10,7 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.NodeSet;
 
 
 class KnowledgeBase {
@@ -92,10 +93,16 @@ class KnowledgeBase {
     }
 
 
+    private OWLNamedIndividual[] individuals(NodeSet<OWLNamedIndividual> set) {
+        return set.getFlattened().toArray(new OWLNamedIndividual[0]);
+    }
+
     public OWLNamedIndividual[] query(OWLClassExpression c) {
-        return hermit
-            .getInstances(c, false)
-            .getFlattened()
-            .toArray(new OWLNamedIndividual[0]);
+        return individuals(hermit.getInstances(c, false));
+    }
+
+    public OWLNamedIndividual[] project(OWLNamedIndividual          i,
+                                        OWLObjectPropertyExpression r) {
+        return individuals(hermit.getObjectPropertyValues(i, r));
     }
 }

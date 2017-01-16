@@ -24,8 +24,9 @@ class Type {
         return self.unifies-with($other) || xt $ctx, $fmt, self, $other;
     }
 
-    method check-list($ctx, $fmt) { xt $ctx, $fmt, self }
-    method check-func($ctx, $fmt) { xt $ctx, $fmt, self }
+    method check-list   ($ctx, $fmt) { xt $ctx, $fmt, self }
+    method check-func   ($ctx, $fmt) { xt $ctx, $fmt, self }
+    method check-concept($ctx, $fmt) { xt $ctx, $fmt, self }
 }
 
 class Type::Unknown is Type {
@@ -70,6 +71,8 @@ class Type::Concept is Type {
 
     method unify($other) { $.of.comparable($other.of) }
 
+    method check-concept($, $) { self }
+
     method check-sat($ctx, $fmt) {
         xt $ctx, $fmt, self unless $.of.satisfiable;
         return self;
@@ -111,6 +114,8 @@ class Scope {
         my $rhs-type = self.t($rhs);
         return func-type $lhs-type, $rhs-type;
     }
+
+    multi method t([ConceptType, $concept]) { concept-type dl($.kb, $concept) }
 
     multi method t([Primitive, Bool $]) { bool-type   }
     multi method t([Primitive, Str  $]) { string-type }
@@ -182,6 +187,12 @@ class Scope {
     multi method t([Query $ctx, $concept]) {
         my $type = concept-type(dl($.kb, $concept)).check-sat($ctx, 'Query');
         return list-type $type;
+    }
+
+    multi method t([Projection $ctx, $term, $role]) {
+        my $concept = self.t($term).check-concept($ctx, 'Projection');
+        my $proj    = dl-r($.kb, [Inverse, $role]).exists($concept.of);
+        return list-type concept-type $proj;
     }
 
 

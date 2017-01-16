@@ -153,7 +153,7 @@ role Rooted {
 }
 
 
-class Individual does Rooted {}
+class Individual { ... }
 
 
 class Concept does Rooted {
@@ -184,16 +184,8 @@ class Concept does Rooted {
     }
 
     method query(--> Array[Individual]) {
-        my $found = jcall &ldl_o_o, $!kb, $!obj, 'query',
-                          "($CONCEPT)[$INDIVIDUAL";
-
-        my Array[Individual] $accu .= new;
-
-        jcall &ldl_each, $found, -> JObject $obj {
-            $accu.push(Individual.new: $!kb, $obj);
-        };
-
-        return $accu;
+        return $!kb.individuals: jcall &ldl_o_o, $!kb, $!obj, 'query',
+                                       "($CONCEPT)[$INDIVIDUAL";
     }
 }
 
@@ -214,6 +206,14 @@ class Role does Rooted {
         my $for-all = jcall(&ldl_o_oo, $!kb, $!obj, $in, 'forAll',
                             "($ROLE$CONCEPT)$CONCEPT");
         return Concept.new: $!kb, $for-all;
+    }
+}
+
+
+class Individual does Rooted {
+    method project(Role() $on --> Array[Individual]) {
+        return $!kb.individuals: jcall &ldl_o_oo, $!kb, $!obj, $on, 'project',
+                                       "($INDIVIDUAL$ROLE)[$INDIVIDUAL";
     }
 }
 
@@ -253,4 +253,13 @@ method everything(--> Concept:D) {
 method nothing(--> Concept:D) {
     my $bot = jcall(&ldl_o, $!kb, 'nothing', "()$CONCEPT");
     return Concept.new: self, $bot;
+}
+
+
+method individuals(JObject() $jarray --> Array[Individual]) {
+    my Array[Individual] $accu .= new;
+    jcall &ldl_each, $jarray, -> JObject $obj {
+        $accu.push(Individual.new: self, $obj);
+    };
+    return $accu;
 }

@@ -29,4 +29,7 @@ cmp-ok eval('rec'), 'eqv', False, 'recursion test with fix point works';
 is eval('query').gist, "[{iri 'beatles'} {iri 'hendrix'}]", 'query execution';
 
 
+is eval('project').gist, "[[] [{iri 'beatles'}]]", 'projection';
+
+
 done-testing;

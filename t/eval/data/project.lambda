@@ -1,0 +1,6 @@
+@share/music.rdf
+map
+    λ(artist:<:MusicArtist>).
+        artist.<:influencedBy>
+in
+    query <:MusicArtist>
