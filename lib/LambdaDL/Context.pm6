@@ -52,6 +52,14 @@ class X::LambdaDL::T is X::LambdaDL is export {
 }
 
 
+class X::LambdaDL::TUnite is X::LambdaDL::T is export {
+    method fmt() { "can't unite types:\n - %s\n - %s" }
+}
+
+class X::LambdaDL::TIntersect is X::LambdaDL::T is export {
+    method fmt() { "can't intersect types:\n - %s\n - %s" }
+}
+
 class X::LambdaDL::TConsTail is X::LambdaDL::T is export {
     method fmt() { "cons tail needs to be a list, but is %s" }
 }
@@ -94,10 +102,6 @@ class X::LambdaDL::TEquiv is X::LambdaDL::T is export {
 
 class X::LambdaDL::TCond is X::LambdaDL::T is export {
     method fmt() { "if condition needs to be %s, but got %s" }
-}
-
-class X::LambdaDL::TBranch is X::LambdaDL::T is export {
-    method fmt() { "%s in then and %s in else don't match" }
 }
 
 class X::LambdaDL::TFix is X::LambdaDL::T is export {

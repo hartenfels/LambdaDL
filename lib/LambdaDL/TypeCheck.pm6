@@ -16,6 +16,8 @@ sub xt(Context() $ctx, $cls, *@types) {
 class Type {
     method Str() { $.id }
 
+    method unify($) { True }
+
     method unifies-with($other) {
         return $other ~~ self.WHAT && self.unify($other) ?? self !! Type;
     }
@@ -29,17 +31,8 @@ class Type {
     method check-concept($ctx, $fmt) { xt $ctx, $fmt, self }
 }
 
-class Type::Unknown is Type {
-    method id() { '(unknown)' }
-
-    method unify($) { False }
-}
-
-class Type::Primitive is Type {
-    has Str:D $.id is required;
-
-    method unify($other) { $.id eq $other.id }
-}
+class Type::Bool   is Type { method id() { 'bool'   } }
+class Type::String is Type { method id() { 'string' } }
 
 class Type::List is Type {
     has Type:D $.of is required;
@@ -80,9 +73,8 @@ class Type::Concept is Type {
 }
 
 
-constant \unknown-type = Type::Unknown.new;
-constant \bool-type    = Type::Primitive.new(:id( 'bool' ));
-constant \string-type  = Type::Primitive.new(:id('string'));
+constant \bool-type    = Type::Bool.new;
+constant \string-type  = Type::String.new;
 
 sub func-type($arg, $ret) { Type::Func.new(:$arg, :$ret) }
 
@@ -102,6 +94,49 @@ class Scope {
     }
 
     method kb() { self.ast.kb }
+
+
+    multi method unite($, Type::Bool   $, Type::Bool   $) { bool-type   }
+    multi method unite($, Type::String $, Type::String $) { string-type }
+
+    multi method unite($ctx, Type::List $a, Type::List $b) {
+        return list-type self.unite($ctx, $a.of, $b.of);
+    }
+
+    multi method unite($, Type::Concept $a, Type::Concept $b) {
+        return concept-type $a.of.union($b.of);
+    }
+
+    multi method unite($ctx, Type::Func $a, Type::Func $b) {
+        return func-type self.intersect($ctx, $a.arg, $b.arg),
+                         self.unite(    $ctx, $a.ret, $b.ret);
+    }
+
+    multi method unite($ctx, $a, $b) { xt $ctx, 'Unite', $a, $b }
+
+
+    multi method intersect($, Type::Bool   $, Type::Bool   $) { bool-type   }
+    multi method intersect($, Type::String $, Type::String $) { string-type }
+
+    multi method intersect($ctx, Type::List $a, Type::List $b) {
+        return list-type self.intersect($a.of, $b.of);
+    }
+
+    multi method unite($ctx, Type::Func $a, Type::Func $b) {
+        return func-type self.unite(    $ctx, $a.arg, $b.arg),
+                         self.intersect($ctx, $a.ret, $b.ret);
+    }
+
+    multi method intersect($, Type::Concept $a, Type::Concept $b) {
+        return concept-type $a.of.intersect($b.of);
+    }
+
+    multi method intersect($ctx, $a, $b) { xt $ctx, 'Intersect', $a, $b }
+
+
+    method join-types($ctx, *@types) {
+        return reduce { self.unite($ctx, $^a, $^b) }, @types;
+    }
 
 
     multi method t([PrimitiveType, 'bool'  ]) {   bool-type }
@@ -177,7 +212,7 @@ class Scope {
 
     multi method t([If $ctx, $cond, $then, $else]) {
         bool-type.check(self.t($cond), $ctx, 'Cond');
-        return self.t($then).check(self.t($else), $ctx, 'Branch');
+        return self.join-types($ctx, self.t($then), self.t($else));
     }
 
     multi method t([Fix $ctx, $term]) {
