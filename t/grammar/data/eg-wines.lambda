@@ -43,6 +43,8 @@ Let
                 Head
                     Identifier
                         "producedWines"
+                Primitive
+                    "You should stay away from wine whose color you cannot identify!"
                 Case
                     Atom
                         ":RedWine"
@@ -64,5 +66,3 @@ Let
                         "z"
                     Primitive
                         "i have no food recommendation for this"
-                Primitive
-                    "You should stay away from wine whose color you cannot identify!"

@@ -66,6 +66,8 @@ Let
                 Switch
                     Identifier
                         "x"
+                    Primitive
+                        "no influence known"
                     Case
                         Atom
                             ":MusicArtist"
@@ -76,8 +78,6 @@ Let
                                 "getName"
                             Identifier
                                 "y"
-                    Primitive
-                        "no influence known"
             Let
                 Identifier
                     "getNames"

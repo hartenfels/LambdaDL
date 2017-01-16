@@ -14,6 +14,8 @@ case a of
 Switch
     Identifier
         "a"
+    Primitive
+        "whatever"
     Case
         Atom
             ":T"
@@ -32,5 +34,3 @@ Switch
         Head
             Identifier
                 "uv"
-    Primitive
-        "whatever"

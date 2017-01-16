@@ -62,7 +62,7 @@ method term-lhs:sym<identifier>($/) { make $<ident>.made }
 method term-lhs:sym<value>($/) { make $<value>.made }
 
 method term-lhs:sym<case>($/) {
-    make ast $/, Switch, $<term>, |$<case>, $<default>
+    make ast $/, Switch, $<term>, $<default>, |$<case>;
 }
 
 
