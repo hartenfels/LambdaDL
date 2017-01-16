@@ -6,7 +6,7 @@ use LambdaDL::KnowledgeBase;
 enum NodeType is export <
     Equiv Projection Application
     Let Fix If
-    Cons Null Head Tail
+    Cons Null Head Tail MapIn
     Switch Case Query
     Nil Obj Lambda Primitive
     PrimitiveType ConceptType ListType FuncType

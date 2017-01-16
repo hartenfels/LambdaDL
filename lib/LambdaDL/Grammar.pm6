@@ -3,7 +3,7 @@ use LambdaDL::Context;
 
 constant @reserved-words = <
     let in fix letrec if then else cons null head tail
-    query true false case of default nil type as λ
+    query true false case of default nil type as λ map
 >;
 
 
@@ -54,6 +54,9 @@ rule term-lhs:sym<cons> { 'cons' <head=.Term> <.Comma> <tail=.Term> }
 rule term-lhs:sym<null> { 'null' <term=.Term> }
 rule term-lhs:sym<head> { 'head' <term=.Term> }
 rule term-lhs:sym<tail> { 'tail' <term=.Term> }
+
+# CBA to figure out how to implement map in typed lambda calculus.
+rule term-lhs:sym<map> { 'map' <func=.Term> <.In> <list=.Term> }
 
 rule term-lhs:sym<query> { 'query' <concept=.Concept> }
 

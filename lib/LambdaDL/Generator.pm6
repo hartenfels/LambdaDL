@@ -60,6 +60,10 @@ multi method gen($_: [Tail, $list]) {
     "\$tail.({.gen: $list})"
 }
 
+multi method gen($_: [MapIn, $func, $list]) {
+    "[{.gen($list)}.map({.gen: $func})]"
+}
+
 multi method gen($_: [Application, $func, $arg]) {
     "({.gen: $func}).({.gen: $arg})"
 }

@@ -68,6 +68,18 @@ class X::LambdaDL::TTail is X::LambdaDL::T is export {
     method fmt() { "can't chop the tail off of a %s" }
 }
 
+class X::LambdaDL::TMapFunc is X::LambdaDL::T is export {
+    method fmt() { "can't use a %s as map's function" }
+}
+
+class X::LambdaDL::TMapList is X::LambdaDL::T is export {
+    method fmt() { "can't use a %s as map's list" }
+}
+
+class X::LambdaDL::TMap is X::LambdaDL::T is export {
+    method fmt() { "can't use a %s to map over a %s" }
+}
+
 class X::LambdaDL::TCall is X::LambdaDL::T is export {
     method fmt() { "can't call a %s" }
 }

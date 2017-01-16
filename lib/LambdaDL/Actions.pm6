@@ -53,6 +53,8 @@ method term-lhs:sym<null>($/) { make ast $/, Null, $<term>          }
 method term-lhs:sym<head>($/) { make ast $/, Head, $<term>          }
 method term-lhs:sym<tail>($/) { make ast $/, Tail, $<term>          }
 
+method term-lhs:sym<map>($/) { make ast $/, MapIn, $<func>, $<list> }
+
 method term-lhs:sym<query>($/) { make ast $/, Query, $<concept> }
 
 method term-lhs:sym<identifier>($/) { make $<ident>.made }

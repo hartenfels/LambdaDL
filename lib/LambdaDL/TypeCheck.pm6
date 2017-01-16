@@ -132,6 +132,17 @@ class Scope {
         return self.t($list).check-list($ctx, 'Tail');
     }
 
+    multi method t([MapIn $ctx, $func, $list]) {
+        my $func-type = self.t($func).check-func($ctx, 'MapFunc');
+        my $list-type = self.t($list).check-list($ctx, 'MapList');
+        if $func-type.arg.unifies-with($list-type.of) {
+            return $func-type.ret;
+        }
+        else {
+            xt $ctx, 'Map', $func-type, $list-type;
+        }
+    }
+
     multi method t([Application $ctx, $func, $arg]) {
         my $func-type = self.t($func).check-func($ctx, 'Call');
         $func-type.arg.check(self.t($arg), $ctx, 'Arg');
