@@ -25,8 +25,6 @@ Then you can run `./lambdadl` proper.
 
 ## TODO
 
-* Projection
-
 * Type Case
 
 * Precedence of `=`
