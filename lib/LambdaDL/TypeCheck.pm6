@@ -164,6 +164,11 @@ class Scope {
             || xt $ctx, 'Cons', $head-type, $tail-type;
     }
 
+    multi method t([Null $ctx, $term]) {
+        self.t($term).check-list($ctx, 'Null');
+        return bool-type;
+    }
+
     multi method t([Head $ctx, $list]) {
         return self.t($list).check-list($ctx, 'Head').of;
     }
