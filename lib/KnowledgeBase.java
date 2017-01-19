@@ -97,6 +97,12 @@ class KnowledgeBase {
         return satisfiable(intersect(a, b));
     }
 
+    public boolean subtype(OWLClassExpression a, OWLClassExpression b) {
+        OWLClassExpression c = df.getOWLObjectComplementOf(b);
+        return  hermit.isEntailed(df.getOWLSubClassOfAxiom(a, b))
+            && !hermit.isEntailed(df.getOWLSubClassOfAxiom(a, c));
+    }
+
 
     private OWLNamedIndividual[] individuals(NodeSet<OWLNamedIndividual> set) {
         return set.getFlattened().toArray(new OWLNamedIndividual[0]);

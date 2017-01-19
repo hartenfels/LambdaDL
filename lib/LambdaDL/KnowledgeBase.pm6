@@ -183,6 +183,11 @@ class Concept does Rooted {
                         "($CONCEPT$CONCEPT)Z");
     }
 
+    method subtype(Concept() $other --> Bool:D) {
+        return so jcall(&ldl_b_oo, $!kb, $!obj, $other, 'subtype',
+                        "($CONCEPT$CONCEPT)Z");
+    }
+
     method query(--> Array[Individual]) {
         return $!kb.individuals: jcall &ldl_o_o, $!kb, $!obj, 'query',
                                        "($CONCEPT)[$INDIVIDUAL";

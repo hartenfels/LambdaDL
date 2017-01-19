@@ -62,7 +62,7 @@ class Type::Concept is Type {
 
     method id() { "$.of" }
 
-    method unify($other) { $.of.comparable($other.of) }
+    method unify($other) { $.of.subtype($other.of) }
 
     method check-concept($, $) { self }
 
