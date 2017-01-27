@@ -1,6 +1,6 @@
 # NAME
 
-LambdaDL – a λ-DL implementation in Perl 6
+LambdaDL – a λ-DL implementation in Perl 6 for the [Software Languages Team](http://softlang.wikidot.com/) and [Institute for Web Science](https://west.uni-koblenz.de/lambda-dl) of the [University of Koblenz-Landau](https://www.uni-koblenz-landau.de/en/university-of-koblenz-landau)
 
 
 # SYNOPSIS
